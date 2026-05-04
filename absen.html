@@ -315,16 +315,19 @@
             btn.disabled = true;
             Swal.fire({ title: 'Menyimpan Kehadiran...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
+            // 3. PENGIRIMAN DATA KE BACKEND
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     body: JSON.stringify({
-                        formType: 'absenPeserta',
+                        formType: 'kehadiran', 
                         idRapat: idRapat,
+                        jenisRapat: jenisRapatTerkini, 
                         nama: namaIn,
                         instansi: finalInstansi,
+                        nip: kontakIn || "-", 
                         jabatan: finalJabatan,
-                        ttd: ttdBase64 
+                        signature: ttdBase64 
                     })
                 });
                 const res = await response.json();
@@ -347,7 +350,7 @@
                         btn.classList.replace('bg-blue-600', 'bg-emerald-600');
                     });
                 } else {
-                    Swal.fire('Gagal!', 'Terjadi kesalahan sistem, silakan coba lagi.', 'error');
+                    Swal.fire('Peringatan!', res.message || 'Terjadi kesalahan sistem, silakan coba lagi.', 'warning');
                     btn.innerHTML = 'Kirim Daftar Hadir'; btn.disabled = false;
                 }
             } catch (err) {
