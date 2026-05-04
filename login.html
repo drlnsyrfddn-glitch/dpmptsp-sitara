@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SITARA by FOUNDERLAN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- MENGHUBUNGKAN SWEETALERT2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-50 flex h-screen overflow-hidden">
+    
+    <!-- KIRI: Informasi (Dark Mode) -->
+    <div class="hidden lg:flex w-1/2 bg-[#0f172a] text-white flex-col justify-center px-16 xl:px-24 relative">
+        <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:20px_20px] opacity-20"></div>
+        <div class="relative z-10">
+            <!-- Box Logo -->
+            <div class="flex items-center gap-4 bg-slate-800/50 p-4 rounded-2xl w-fit mb-12 backdrop-blur-md border border-slate-700/50 shadow-xl">
+                <img src="assets/img/morowali.png" alt="Logo Morowali" class="h-12 w-auto">
+                <img src="assets/img/logo_mpp.webp" alt="Logo MPP" class="h-12 w-auto bg-white rounded-lg p-1">
+            </div>
+            
+            <h1 class="text-6xl xl:text-7xl font-black mb-4 tracking-tight">SITARA</h1>
+            <h2 class="text-2xl font-bold text-slate-300 mb-6 uppercase tracking-widest">Sistem Informasi Tata Rapat</h2>
+            <p class="text-slate-400 leading-relaxed max-w-md text-sm">
+                Platform digital terintegrasi untuk manajemen administrasi, kehadiran, dan risalah rapat di lingkungan DPMPTSP Kabupaten Morowali.
+            </p>
+        </div>
+        <div class="absolute bottom-10 text-[10px] text-slate-500 font-bold uppercase tracking-widest z-10">
+            &copy; 2026 DPMPTSP Kab. Morowali. All rights reserved.
+        </div>
+    </div>
+    
+    <!-- KANAN: Form Login -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center relative p-6">
+        <div class="bg-white p-10 md:p-14 rounded-[2.5rem] shadow-2xl w-full max-w-md border border-slate-100 relative z-10">
+            <div class="text-center mb-10">
+                <h3 class="text-3xl font-black text-[#0f172a] mb-2 tracking-tight">Selamat Datang</h3>
+                <p class="text-slate-500 text-sm">Silakan masuk dengan akun Anda</p>
+            </div>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block mb-2">Username</label>
+                    <input type="text" id="username" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 transition-all text-slate-700 font-bold" placeholder="Ketik username Anda">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block mb-2">Password</label>
+                    <input type="password" id="password" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 transition-all text-slate-700 font-bold" placeholder="••••••••">
+                </div>
+                <button onclick="login()" id="btn-login" class="w-full py-4 mt-2 bg-[#0f172a] text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-xl hover:bg-slate-800 transition-all active:scale-95">Masuk ke Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT LOGIKA LOGIN -->
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKE3Se0Y-Kouz4McrLaEo6k7kbq-ee_ZNQVt8SwLVsxUiS2yMCF1ooDSJlAkd5eThIkw/exec";
+
+        async function login() {
+            const userIn = document.getElementById('username').value;
+            const passIn = document.getElementById('password').value;
+            const btn = document.getElementById('btn-login');
+
+            // 1. Validasi Input Kosong menggunakan SweetAlert2
+            if (!userIn || !passIn) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Data Belum Lengkap',
+                    text: 'Username dan Password wajib diisi!',
+                    confirmButtonColor: '#0f172a',
+                    borderRadius: '1rem'
+                });
+                return;
+            }
+
+            btn.innerText = "Memverifikasi...";
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ formType: 'login', username: userIn, password: passIn }) 
+                });
+                const res = await response.json();
+
+                if (res.status === "success") {
+                    // Simpan data login
+                    localStorage.setItem('sitaraUser', JSON.stringify(res.user));
+                    
+                    // 2. Notifikasi Berhasil yang Estetik
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Login Berhasil!',
+                        text: `Selamat datang kembali, ${res.user.nama}`,
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    }).then(() => {
+                        window.location.href = "admin.html";
+                    });
+                } else {
+                    // 3. Notifikasi Gagal Password Salah
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Akses Ditolak',
+                        text: 'Username atau Password yang Anda masukkan salah!',
+                        confirmButtonColor: '#0f172a'
+                    });
+                    btn.innerText = "Masuk ke Dashboard"; 
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Terjadi gangguan jaringan, coba lagi.', confirmButtonColor: '#0f172a' });
+                btn.innerText = "Masuk ke Dashboard"; 
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap Dokumen Rapat - SITARA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style> 
+        body { font-family: 'Inter', sans-serif; } 
+        .paper-shadow { box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1), 0 0 10px rgba(0,0,0,0.02); }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @media print {
+            @page { margin: 1.5cm; }
+            body, html { background-color: white !important; padding: 0 !important; height: auto !important; overflow: visible !important; }
+            main { max-width: 100% !important; margin: 0 !important; border-radius: 0 !important; box-shadow: none !important; overflow: visible !important; display: block !important; }
+            .no-print { display: none !important; }
+            .print-break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
+            section { display: block !important; page-break-inside: auto; }
+            .print-hide-header-bar { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen py-8 px-4 sm:py-12 flex justify-center selection:bg-slate-900 selection:text-white">
+
+    <main class="w-full max-w-4xl bg-white rounded-3xl paper-shadow overflow-hidden print:overflow-visible relative animate-fade-in">
+        <div class="print-hide-header-bar h-3 w-full bg-slate-900"></div>
+        
+        <div id="loading-area" class="flex flex-col items-center justify-center py-32">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900 mb-4"></div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Merangkai Dokumen Laporan...</p>
+        </div>
+
+        <div id="error-area" class="hidden flex flex-col items-center justify-center py-32 text-center px-4">
+            <div class="h-16 w-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-4 text-3xl">&times;</div>
+            <h2 class="text-lg font-bold text-slate-900 mb-2">Dokumen Tidak Ditemukan</h2>
+            <p id="error-msg" class="text-sm text-slate-500">Notulensi untuk rapat ini belum tersedia atau link tidak valid.</p>
+        </div>
+
+        <div id="content-area" class="hidden p-8 sm:p-12 lg:p-16 print:p-0">
+            <!-- HALAMAN 1: NOTULENSI -->
+            <header class="flex flex-col sm:flex-row items-center gap-6 border-b-2 border-slate-900 pb-8 mb-8 text-center sm:text-left">
+                <img src="assets/img/morowali.png" alt="Logo Morowali" class="h-24 w-auto drop-shadow-sm">
+                <div>
+                    <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight uppercase">Laporan Hasil Rapat</h1>
+                    <p class="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest mt-2">Sistem Informasi Tata Rapat (SITARA) - DPMPTSP Morowali</p>
+                </div>
+            </header>
+
+            <section class="mb-10">
+                <h2 id="out-judul" class="text-xl sm:text-2xl font-extrabold text-slate-900 mb-6 leading-tight">Nama Rapat</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5 text-sm bg-slate-50 print:bg-white p-6 print:p-0 rounded-2xl border border-slate-100 print:border-none print:gap-y-3">
+                    <div class="flex flex-col"><span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Hari, Tanggal</span><span id="out-tgl" class="font-semibold text-slate-800">Tanggal Rapat</span></div>
+                    <div class="flex flex-col"><span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Lokasi Rapat</span><span id="out-lokasi" class="font-semibold text-slate-800">Lokasi</span></div>
+                    <div class="flex flex-col"><span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Pimpinan Rapat</span><span id="out-pimpinan" class="font-semibold text-slate-800">-</span></div>
+                    <div class="flex flex-col"><span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Notulis / Pencatat</span><span id="out-notulis" class="font-semibold text-slate-800">-</span></div>
+                </div>
+            </section>
+
+            <section class="space-y-10">
+                <div class="print-break-inside-avoid">
+                    <div class="flex items-center gap-3 mb-4 border-b border-slate-100 print:border-slate-300 pb-3">
+                        <div class="h-6 w-6 rounded border border-slate-900 text-slate-900 flex items-center justify-center font-bold text-[10px]">A</div>
+                        <h3 class="text-sm font-extrabold text-slate-900 uppercase tracking-widest">Uraian / Pembahasan</h3>
+                    </div>
+                    <div id="out-pembahasan" class="text-sm sm:text-base text-slate-600 print:text-black leading-relaxed pl-9 whitespace-pre-wrap">Memuat uraian...</div>
+                </div>
+
+                <div class="print-break-inside-avoid">
+                    <div class="flex items-center gap-3 mb-4 border-b border-slate-100 print:border-slate-300 pb-3">
+                        <div class="h-6 w-6 rounded bg-blue-600 print:bg-transparent print:border print:border-slate-900 text-white print:text-slate-900 flex items-center justify-center font-bold text-[10px]">B</div>
+                        <h3 class="text-sm font-extrabold text-blue-700 print:text-slate-900 uppercase tracking-widest">Kesimpulan & Keputusan</h3>
+                    </div>
+                    <div id="out-hasil" class="text-sm sm:text-base text-slate-800 print:text-black font-semibold leading-relaxed pl-9 whitespace-pre-wrap bg-blue-50/50 print:bg-transparent p-5 print:p-0 rounded-2xl border border-blue-100 print:border-none">Memuat hasil...</div>
+                </div>
+
+                <!-- LAMPIRAN 1: DOKUMENTASI -->
+                <div id="container-dokumentasi" class="hidden">
+                    <div class="flex items-center gap-3 mb-4 border-b border-slate-100 print:border-slate-300 pb-3 mt-10 print-break-inside-avoid">
+                        <div class="h-6 w-6 rounded border border-slate-900 text-slate-900 flex items-center justify-center font-bold text-[10px]">C</div>
+                        <h3 class="text-sm font-extrabold text-slate-900 uppercase tracking-widest">Lampiran 1: Dokumentasi Rapat</h3>
+                    </div>
+                    <div id="grid-foto" class="grid grid-cols-1 sm:grid-cols-2 gap-6 pl-9 items-start"></div>
+                </div>
+            </section>
+
+            <!-- LAMPIRAN 2: DAFTAR HADIR (Akan otomatis loncat ke kertas baru saat di-print) -->
+            <section id="container-absen" class="hidden print:break-before-page mt-16 pt-12 print:pt-0 border-t print:border-none border-slate-200">
+                <div class="text-center mb-8">
+                    <h3 class="text-lg font-extrabold text-slate-900 uppercase tracking-widest underline underline-offset-4 mb-2">Daftar Hadir Rapat</h3>
+                    <p id="absen-agenda" class="text-xs font-bold text-slate-600 print:text-black uppercase">Agenda Rapat</p>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse border border-slate-400">
+                        <thead>
+                            <tr class="bg-slate-100 print:bg-slate-200 text-[10px] uppercase tracking-widest font-bold text-slate-800">
+                                <th class="border border-slate-400 px-3 py-3 text-center w-10">No</th>
+                                <th class="border border-slate-400 px-4 py-3">Nama / NIP</th>
+                                <th class="border border-slate-400 px-4 py-3">Instansi</th>
+                                <th class="border border-slate-400 px-4 py-3">Jabatan</th>
+                                <th class="border border-slate-400 px-4 py-3 text-center w-32">Tanda Tangan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="body-absen" class="text-xs text-slate-800 print:text-black">
+                            <!-- Tabel Absen di-generate lewat JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <footer class="mt-16 pt-8 border-t border-slate-200 print:border-slate-300 flex flex-col sm:flex-row justify-between items-center sm:items-end gap-6 print-break-inside-avoid">
+                <div class="text-center sm:text-left">
+                    <p class="text-[10px] font-bold text-slate-400 print:text-slate-500 uppercase tracking-widest">Dokumen Elektronik Valid</p>
+                    <p class="text-[10px] text-slate-400 print:text-slate-500 mt-1">Dihasilkan secara otomatis oleh SITARA DPMPTSP Morowali.</p>
+                </div>
+                <button onclick="window.print()" class="no-print w-full sm:w-auto bg-slate-900 text-white px-8 py-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest shadow-xl hover:bg-slate-800 flex items-center justify-center gap-3 transition-all active:scale-95">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Cetak Semua Lampiran (PDF)
+                </button>
+            </footer>
+        </div>
+    </main>
+
+    <script>
+        // PASTIKAN LINK SAMA DENGAN DEPLOY TERBARU
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKE3Se0Y-Kouz4McrLaEo6k7kbq-ee_ZNQVt8SwLVsxUiS2yMCF1ooDSJlAkd5eThIkw/exec";
+
+        window.onload = async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const idRapat = urlParams.get('id');
+
+            if (!idRapat) { tampilkanError("ID Rapat tidak ditemukan pada URL."); return; }
+
+            try {
+                // 1. TARIK DATA NOTULEN & INFO RAPAT
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST', body: JSON.stringify({ formType: 'getDetailRapat', idRapat: idRapat })
+                });
+                const res = await response.json();
+
+                if (res.status === "success" && res.data) {
+                    if (!res.data.notulen || res.data.notulen.trim() === "") {
+                        tampilkanError("Dokumen risalah belum disusun oleh petugas untuk rapat ini."); return;
+                    }
+
+                    document.getElementById('out-judul').innerText = res.data.nama;
+                    document.getElementById('absen-agenda').innerText = res.data.nama;
+                    document.getElementById('out-tgl').innerText = new Date(res.data.tgl).toLocaleDateString('id-ID', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+                    document.getElementById('out-lokasi').innerText = res.data.lokasi || "-";
+
+                    const rawText = res.data.notulen;
+                    try {
+                        const strPimpinan = rawText.split('[PIMPINAN RAPAT]')[1].split('[NOTULIS]')[0].trim();
+                        const strNotulis = rawText.split('[NOTULIS]')[1].split('[PEMBAHASAN]')[0].trim();
+                        const strPembahasan = rawText.split('[PEMBAHASAN]')[1].split('[KESIMPULAN & HASIL]')[0].trim();
+                        
+                        let strHasil = "", strDokumentasi = "", fotoUrls = [];
+                        if (rawText.includes('[DOKUMENTASI]')) {
+                            strHasil = rawText.split('[KESIMPULAN & HASIL]')[1].split('[DOKUMENTASI]')[0].trim();
+                            strDokumentasi = rawText.split('[DOKUMENTASI]')[1].trim();
+                            fotoUrls = strDokumentasi.split(',').filter(url => url.trim() !== "");
+                        } else {
+                            strHasil = rawText.split('[KESIMPULAN & HASIL]')[1].trim();
+                        }
+
+                        document.getElementById('out-pimpinan').innerText = strPimpinan;
+                        document.getElementById('out-notulis').innerText = strNotulis;
+                        document.getElementById('out-pembahasan').innerText = strPembahasan;
+                        document.getElementById('out-hasil').innerText = strHasil;
+
+                        if (fotoUrls.length > 0) {
+                            document.getElementById('container-dokumentasi').classList.remove('hidden');
+                            const gridFoto = document.getElementById('grid-foto');
+                            fotoUrls.forEach(url => {
+                                const matchId = url.match(/([a-zA-Z0-9_-]{25,})/);
+                                if (matchId && matchId[1]) {
+                                    const directImageUrl = `https://drive.google.com/thumbnail?id=${matchId[1]}&sz=w1000`;
+                                    gridFoto.innerHTML += `<div class="print-break-inside-avoid w-full bg-white print:bg-transparent rounded-2xl border border-slate-200 print:border-none shadow-sm print:shadow-none p-3 print:p-0 flex flex-col items-center justify-center"><img src="${directImageUrl}" class="w-full h-auto max-h-[500px] object-contain rounded-xl print:rounded-none"></div>`;
+                                }
+                            });
+                        }
+                    } catch(e) { document.getElementById('out-pembahasan').innerText = rawText; document.getElementById('out-hasil').innerText = "Format data lama."; }
+
+                    // ==========================================
+                    // 2. TARIK DATA ABSENSI & TANDA TANGAN
+                    // ==========================================
+                    try {
+                        const resAbsen = await fetch(GOOGLE_SCRIPT_URL, {
+                            method: 'POST', body: JSON.stringify({ formType: 'getPantauPeserta', idRapat: idRapat, jenisRapat: res.data.jenis })
+                        });
+                        const dataAbsen = await resAbsen.json();
+                        
+                        if (dataAbsen.status === "success" && dataAbsen.data.length > 0) {
+                            document.getElementById('container-absen').classList.remove('hidden');
+                            const tbody = document.getElementById('body-absen');
+                            
+                            dataAbsen.data.forEach((p, idx) => {
+                                // Trik susunan TTD Zigzag (Kiri - Kanan) Khas Birokrasi
+                                const isGenap = (idx % 2 === 0);
+                                const alignClass = isGenap ? "mr-auto" : "ml-auto";
+                                const numPos = isGenap ? "left-1" : "right-2";
+                                
+                                // Ubah link TTD menjadi format gambar yang aman
+                                let ttdUrl = "";
+                                if(p.ttd) {
+                                    const matchId = p.ttd.match(/([a-zA-Z0-9_-]{25,})/);
+                                    if(matchId && matchId[1]) { ttdUrl = `https://drive.google.com/thumbnail?id=${matchId[1]}&sz=w400`; }
+                                }
+
+                                tbody.innerHTML += `
+                                    <tr class="print-break-inside-avoid">
+                                        <td class="border border-slate-400 px-3 py-3 text-center font-bold text-sm">${idx + 1}</td>
+                                        <td class="border border-slate-400 px-4 py-3">
+                                            <p class="font-bold text-slate-900">${p.nama}</p>
+                                            <p class="text-[10px] text-slate-500 print:text-black font-mono mt-0.5">NIP. ${p.nip}</p>
+                                        </td>
+                                        <td class="border border-slate-400 px-4 py-3">${p.instansi}</td>
+                                        <td class="border border-slate-400 px-4 py-3">${p.jabatan}</td>
+                                        <td class="border border-slate-400 p-2 relative h-16 w-32">
+                                            <span class="text-[9px] text-slate-400 print:text-black absolute top-1 ${numPos}">${idx + 1}.</span>
+                                            ${ttdUrl ? `<img src="${ttdUrl}" class="h-12 w-auto max-w-[80px] object-contain ${alignClass}">` : ''}
+                                        </td>
+                                    </tr>
+                                `;
+                            });
+                        }
+                    } catch(err) { console.log("Belum ada data hadir"); }
+
+                    document.getElementById('loading-area').classList.add('hidden');
+                    document.getElementById('content-area').classList.remove('hidden');
+
+                } else { tampilkanError("Data rapat tidak ditemukan di server."); }
+            } catch (err) { tampilkanError("Gagal terhubung ke server."); }
+        };
+
+        function tampilkanError(pesan) {
+            document.getElementById('loading-area').classList.add('hidden');
+            document.getElementById('error-area').classList.remove('hidden');
+            document.getElementById('error-msg').innerText = pesan;
+        }
+    </script>
+</body>
+</html>
