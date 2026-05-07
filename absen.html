@@ -16,7 +16,6 @@
 <body class="bg-pola text-slate-800 antialiased min-h-screen flex items-center justify-center p-4">
 
     <div class="w-full max-w-lg bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden relative">
-        <!-- HEADER -->
         <div class="bg-[#0f172a] p-8 text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-slate-700/40 via-transparent to-transparent"></div>
             <div class="flex justify-center items-center gap-3 mb-4 relative z-10">
@@ -27,7 +26,6 @@
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 relative z-10">SITARA - DPMPTSP Morowali</p>
         </div>
 
-        <!-- INFO RAPAT (Dinamic) -->
         <div id="info-rapat" class="bg-slate-50 border-b border-slate-100 p-6 text-center">
             <div class="animate-pulse flex flex-col items-center gap-2">
                 <div class="h-4 bg-slate-200 rounded w-3/4"></div>
@@ -35,10 +33,8 @@
             </div>
         </div>
 
-        <!-- FORM ABSEN -->
         <div class="p-8 space-y-5">
             
-            <!-- KOTAK PILIHAN KATEGORI (Default Tersembunyi, Muncul jika Lintas OPD) -->
             <div id="box-kategori" class="hidden bg-slate-50 p-5 rounded-2xl border border-slate-200 shadow-inner">
                 <label class="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest block mb-3 text-center">Anda Hadir Sebagai:</label>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -57,16 +53,13 @@
                 </div>
             </div>
 
-            <!-- NAMA LENGKAP -->
             <div>
                 <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block mb-2">Nama Lengkap & Gelar</label>
                 <input type="text" id="nama" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 transition-all font-semibold text-slate-700" placeholder="Ketik nama Anda...">
             </div>
             
-            <!-- GRID ISIAN DINAMIS -->
             <div id="grid-dinamis" class="grid grid-cols-1 md:grid-cols-2 gap-5 transition-all">
                 
-                <!-- STATUS KEPEGAWAIAN (Hanya muncul untuk Internal) -->
                 <div id="wrap-status-pegawai" class="hidden">
                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block mb-2">Status Kepegawaian</label>
                     <select id="status-pegawai" onchange="ubahForm()" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 transition-all font-semibold text-slate-700">
@@ -76,26 +69,22 @@
                     </select>
                 </div>
 
-                <!-- NIP / NO HP -->
                 <div id="wrap-kontak" class="hidden">
                     <label id="label-kontak" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block mb-2">NIP / No HP</label>
                     <input type="text" id="kontak" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 transition-all font-semibold text-slate-700" placeholder="...">
                 </div>
                 
-                <!-- INSTANSI (Sembunyi jika Internal) -->
                 <div id="wrap-instansi" class="hidden">
                     <label id="label-instansi" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block mb-2">Asal Instansi</label>
                     <input type="text" id="instansi" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 transition-all font-semibold text-slate-700" placeholder="...">
                 </div>
                 
-                <!-- JABATAN -->
                 <div class="md:col-span-2" id="wrap-jabatan">
                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block mb-2">Jabatan</label>
                     <input type="text" id="jabatan" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 transition-all font-semibold text-slate-700" placeholder="Jabatan Anda...">
                 </div>
             </div>
 
-            <!-- AREA TANDA TANGAN -->
             <div>
                 <div class="flex justify-between items-end mb-2 mt-2">
                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block">Tanda Tangan Digital</label>
@@ -109,7 +98,6 @@
                 </div>
             </div>
 
-            <!-- TOMBOL SUBMIT -->
             <button onclick="submitAbsen()" id="btn-submit" class="w-full py-4 mt-4 bg-blue-600 text-white rounded-2xl font-bold uppercase text-xs tracking-widest shadow-xl hover:bg-blue-700 active:scale-95 transition-all flex justify-center items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 Kirim Daftar Hadir
@@ -127,7 +115,6 @@
         const idRapat = urlParams.get('id');
         let jenisRapatTerkini = ""; 
 
-        // ----- LOGIKA CANVAS (TANDA TANGAN) -----
         const canvas = document.getElementById('signature-pad');
         const ctx = canvas.getContext('2d');
         let isDrawing = false;
@@ -160,7 +147,6 @@
         canvas.addEventListener('touchstart', startDrawing, {passive: false}); canvas.addEventListener('touchmove', draw, {passive: false}); canvas.addEventListener('touchend', stopDrawing);
         function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); hasSignature = false; }
 
-        // ----- LOGIKA PERUBAHAN FORM DINAMIS BERSYARAT -----
         function ubahForm() {
             let kat = 'Internal';
             const boxKategori = document.getElementById('box-kategori');
@@ -181,16 +167,15 @@
             const iInstansi = document.getElementById('instansi');
 
             if (kat === 'Internal') {
-                wInstansi.classList.add('hidden'); // Sembunyikan asal instansi
-                wStatus.classList.remove('hidden'); // Munculkan Dropdown Kepegawaian
+                wInstansi.classList.add('hidden'); 
+                wStatus.classList.remove('hidden'); 
                 
-                // Cek status kepegawaian untuk memunculkan NIP
                 if (iStatus === 'PNS' || iStatus === 'PPPK') {
                     wKontak.classList.remove('hidden');
                     lKontak.innerText = "Nomor Induk Pegawai (NIP)";
                     iKontak.placeholder = "Masukkan NIP Anda...";
                 } else {
-                    wKontak.classList.add('hidden'); // Jika Outsourcing, hilangkan NIP
+                    wKontak.classList.add('hidden'); 
                 }
             } else if (kat === 'Lintas OPD') {
                 wStatus.classList.add('hidden');
@@ -213,7 +198,6 @@
             }
         }
 
-        // ----- LOAD INFO RAPAT DARI SERVER -----
         async function muatInfoRapat() {
             if (!idRapat) {
                 document.getElementById('info-rapat').innerHTML = '<p class="text-red-500 font-bold text-sm">ID Rapat tidak ditemukan.</p>';
@@ -227,9 +211,32 @@
                 if (res.status === "success") {
                     const rapat = res.data.find(r => r.id === idRapat);
                     if (rapat) {
+
+                        // LOGIKA BLOKIR RAPAT TIDAK AKTIF
+                        if (rapat.status !== "AKTIF") {
+                            document.getElementById('info-rapat').innerHTML = `
+                                <h2 class="text-lg font-black text-slate-800 leading-tight mb-2">${rapat.nama}</h2>
+                                <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-[10px] font-extrabold tracking-widest border border-red-200 uppercase">SESI TELAH DITUTUP</span>
+                            `;
+                            
+                            const btn = document.getElementById('btn-submit');
+                            btn.disabled = true;
+                            btn.classList.replace('bg-blue-600', 'bg-slate-400');
+                            btn.innerHTML = 'SESI PRESENSI BERAKHIR';
+                            
+                            document.getElementById('nama').disabled = true;
+                            document.getElementById('jabatan').disabled = true;
+                            document.getElementById('instansi').disabled = true;
+                            document.getElementById('kontak').disabled = true;
+                            document.getElementById('status-pegawai').disabled = true;
+                            document.querySelectorAll('input[name="kategori"]').forEach(r => r.disabled = true);
+                            
+                            Swal.fire({ icon: 'error', title: 'Rapat Selesai', text: 'Maaf, daftar hadir tidak dapat diisi karena status rapat ini sudah tidak aktif.', confirmButtonColor: '#0f172a' });
+                            return; 
+                        }
+
                         jenisRapatTerkini = rapat.jenis; 
                         
-                        // Eksekusi Logika Tampilan Utama
                         const boxKategori = document.getElementById('box-kategori');
                         if (jenisRapatTerkini === 'Internal') {
                             boxKategori.classList.add('hidden'); 
@@ -238,7 +245,7 @@
                             document.querySelector('input[value="Lintas OPD"]').checked = true;
                         }
                         
-                        ubahForm(); // Panggil fungsi ubah form
+                        ubahForm(); 
 
                         const tgl = new Date(rapat.tgl).toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
                         const jam = new Date(rapat.waktu).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
@@ -261,7 +268,6 @@
         }
         window.addEventListener('DOMContentLoaded', muatInfoRapat);
 
-        // ----- SUBMIT KE GOOGLE SHEETS -----
         async function submitAbsen() {
             const namaIn = document.getElementById('nama').value.trim();
             const jabatanIn = document.getElementById('jabatan').value.trim();
@@ -269,7 +275,6 @@
             const kontakIn = document.getElementById('kontak').value.trim();
             const statusPegawai = document.getElementById('status-pegawai').value;
             
-            // Cek Kategori Aktif
             let kat = 'Internal';
             const boxKategori = document.getElementById('box-kategori');
             if (!boxKategori.classList.contains('hidden')) {
@@ -277,7 +282,6 @@
                 if (radioChecked) kat = radioChecked.value;
             }
 
-            // 1. Validasi Input Mutlak
             if (!namaIn || !jabatanIn) {
                 return Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap', text: 'Nama dan Jabatan wajib diisi.', confirmButtonColor: '#0f172a' });
             }
@@ -291,7 +295,6 @@
                 return Swal.fire({ icon: 'warning', title: 'Tanda Tangan Kosong', text: 'Mohon bubuhkan tanda tangan digital Anda.', confirmButtonColor: '#0f172a' });
             }
 
-            // 2. Persiapan Data ke Backend
             let finalInstansi = "DPMPTSP Kab. Morowali";
             let finalJabatan = jabatanIn;
 
@@ -315,7 +318,6 @@
             btn.disabled = true;
             Swal.fire({ title: 'Menyimpan Kehadiran...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-            // 3. PENGIRIMAN DATA KE BACKEND
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
@@ -337,7 +339,6 @@
                         icon: 'success', title: 'Kehadiran Tercatat!', text: 'Terima kasih, Anda telah terdaftar dalam rapat ini.',
                         confirmButtonColor: '#0f172a', allowOutsideClick: false
                     }).then(() => {
-                        // Kunci semua form
                         document.getElementById('nama').disabled = true;
                         document.getElementById('jabatan').disabled = true;
                         document.getElementById('instansi').disabled = true;
