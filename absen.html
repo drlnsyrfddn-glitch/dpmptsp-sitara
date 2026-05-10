@@ -211,32 +211,25 @@
                 if (res.status === "success") {
                     const rapat = res.data.find(r => r.id === idRapat);
                     if (rapat) {
-
-                        // LOGIKA BLOKIR RAPAT TIDAK AKTIF
                         if (rapat.status !== "AKTIF") {
                             document.getElementById('info-rapat').innerHTML = `
                                 <h2 class="text-lg font-black text-slate-800 leading-tight mb-2">${rapat.nama}</h2>
                                 <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-[10px] font-extrabold tracking-widest border border-red-200 uppercase">SESI TELAH DITUTUP</span>
                             `;
-                            
                             const btn = document.getElementById('btn-submit');
                             btn.disabled = true;
                             btn.classList.replace('bg-blue-600', 'bg-slate-400');
                             btn.innerHTML = 'SESI PRESENSI BERAKHIR';
-                            
                             document.getElementById('nama').disabled = true;
                             document.getElementById('jabatan').disabled = true;
                             document.getElementById('instansi').disabled = true;
                             document.getElementById('kontak').disabled = true;
                             document.getElementById('status-pegawai').disabled = true;
                             document.querySelectorAll('input[name="kategori"]').forEach(r => r.disabled = true);
-                            
-                            Swal.fire({ icon: 'error', title: 'Rapat Selesai', text: 'Maaf, daftar hadir tidak dapat diisi karena status rapat ini sudah tidak aktif.', confirmButtonColor: '#0f172a' });
                             return; 
                         }
 
                         jenisRapatTerkini = rapat.jenis; 
-                        
                         const boxKategori = document.getElementById('box-kategori');
                         if (jenisRapatTerkini === 'Internal') {
                             boxKategori.classList.add('hidden'); 
@@ -285,31 +278,27 @@
             if (!namaIn || !jabatanIn) {
                 return Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap', text: 'Nama dan Jabatan wajib diisi.', confirmButtonColor: '#0f172a' });
             }
-            if (kat !== 'Internal' && !instansiIn) {
-                return Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap', text: 'Mohon isi asal Instansi/Perusahaan Anda.', confirmButtonColor: '#0f172a' });
-            }
-            if (kat === 'Internal' && (statusPegawai === 'PNS' || statusPegawai === 'PPPK') && !kontakIn) {
-                return Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap', text: 'Mohon isi NIP Anda sebagai data kepegawaian.', confirmButtonColor: '#0f172a' });
-            }
             if (!hasSignature) {
                 return Swal.fire({ icon: 'warning', title: 'Tanda Tangan Kosong', text: 'Mohon bubuhkan tanda tangan digital Anda.', confirmButtonColor: '#0f172a' });
             }
 
+            // --- PERBAIKAN LOGIKA DUPLIKASI ---
             let finalInstansi = "DPMPTSP Kab. Morowali";
-            let finalJabatan = jabatanIn;
+            let finalJabatan = jabatanIn; 
+            let sendKontak = kontakIn || "-";
 
             if (kat === 'Internal') {
-                if (statusPegawai === 'PNS' || statusPegawai === 'PPPK') {
-                    finalJabatan = `${jabatanIn} (${statusPegawai} - NIP: ${kontakIn})`;
-                } else {
-                    finalJabatan = `${jabatanIn} (Outsourcing)`;
-                }
+                // Untuk Internal, Jabatan diberi embel-embel status kepegawaian agar jelas
+                finalJabatan = `${jabatanIn} (${statusPegawai})`;
             } else {
+                // Untuk Umum/Perusahaan, Jabatan dibiarkan murni agar tidak dobel
                 finalInstansi = instansiIn;
-                if (kontakIn !== "") {
-                    const labelKontak = kat === 'Lintas OPD' ? 'NIP' : 'HP';
-                    finalJabatan = `${jabatanIn} (${labelKontak}: ${kontakIn})`;
-                }
+            }
+
+            // --- PERBAIKAN LOGIKA ANGKA 0 HILANG ---
+            // Jika input berisi nomor HP/NIP (angka), beri tanda petik agar terbaca sebagai teks di Sheets
+            if (sendKontak !== "-" && /^\d+$/.test(sendKontak)) {
+                sendKontak = "'" + sendKontak;
             }
 
             const ttdBase64 = canvas.toDataURL(); 
@@ -327,7 +316,7 @@
                         jenisRapat: jenisRapatTerkini, 
                         nama: namaIn,
                         instansi: finalInstansi,
-                        nip: kontakIn || "-", 
+                        nip: sendKontak, // Mengirim data kontak yang sudah dipasangi tanda petik
                         jabatan: finalJabatan,
                         signature: ttdBase64 
                     })
@@ -339,14 +328,6 @@
                         icon: 'success', title: 'Kehadiran Tercatat!', text: 'Terima kasih, Anda telah terdaftar dalam rapat ini.',
                         confirmButtonColor: '#0f172a', allowOutsideClick: false
                     }).then(() => {
-                        document.getElementById('nama').disabled = true;
-                        document.getElementById('jabatan').disabled = true;
-                        document.getElementById('instansi').disabled = true;
-                        document.getElementById('kontak').disabled = true;
-                        document.getElementById('status-pegawai').disabled = true;
-                        if(!boxKategori.classList.contains('hidden')) {
-                            document.querySelectorAll('input[name="kategori"]').forEach(r => r.disabled = true);
-                        }
                         btn.innerText = "Terima Kasih ✓";
                         btn.classList.replace('bg-blue-600', 'bg-emerald-600');
                     });
