@@ -8,40 +8,24 @@
     <style>
         @page { size: A4; margin: 0; }
         body { background-color: #f1f5f9; font-family: "Times New Roman", Times, serif; color: black; margin: 0; padding: 0; }
-        
-        .paper { 
-            background: white; 
-            width: 210mm; 
-            min-height: 297mm; 
-            margin: 20px auto; 
-            padding: 1.5cm 2.5cm 2cm 2.5cm; 
-            box-shadow: 0 0 15px rgba(0,0,0,0.1); 
-        }
-
+        .paper { background: white; width: 210mm; min-height: 297mm; margin: 20px auto; padding: 1.5cm 2.5cm 2cm 2.5cm; box-shadow: 0 0 15px rgba(0,0,0,0.1); position: relative; }
         .kop-header { border-bottom: 4px solid black; padding-bottom: 5px; margin-bottom: 2px; text-align: center; }
         .kop-header::after { content: ""; display: block; border-bottom: 1px solid black; margin-top: 2px; }
-        
-        /* TABEL PENGUNCI TITIK DUA (Sangat Penting) */
         .table-fixed-dots { width: 100%; border-collapse: collapse; }
         .table-fixed-dots td { padding: 2px 0; vertical-align: top; font-size: 12pt; }
-        .w-label { width: 100px; } /* Mengunci lebar label kiri */
-        .w-sep { width: 20px; text-align: center; } /* Mengunci lebar kolom titik dua */
-
+        .w-label { width: 120px; } 
+        .w-sep { width: 20px; text-align: center; }
+        .table-undangan { width: 100%; border-collapse: collapse; margin-top: 15px; border: 1px solid black; }
+        .table-undangan th, .table-undangan td { border: 1px solid black; padding: 10px; vertical-align: top; font-size: 11pt; }
         .no-print { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; gap: 10px; }
-        
-        @media print {
-            body { background: white; }
-            .paper { margin: 0; box-shadow: none; width: 100%; }
-            .no-print { display: none !important; }
-            .page-break { page-break-before: always; }
-        }
+        @media print { body { background: white; } .paper { margin: 0; box-shadow: none; width: 100%; } .no-print { display: none !important; } .page-break { page-break-before: always; } }
     </style>
 </head>
 <body>
 
     <div class="no-print">
-        <button onclick="window.print()" class="bg-blue-700 text-white px-6 py-2 rounded-lg font-bold shadow-lg hover:bg-blue-800 transition-all">CETAK SURAT</button>
-        <button onclick="window.close()" class="bg-white border border-slate-300 px-6 py-2 rounded-lg font-bold">TUTUP</button>
+        <button onclick="window.print()" class="bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg">CETAK SURAT</button>
+        <button onclick="window.close()" class="bg-white border border-slate-300 px-6 py-3 rounded-xl font-bold">TUTUP</button>
     </div>
 
     <div class="paper">
@@ -60,72 +44,121 @@
         <div class="flex justify-between mt-8">
             <div class="w-2/3">
                 <table class="table-fixed-dots">
-                    <tr>
-                        <td class="w-label">Nomor</td>
-                        <td class="w-sep">:</td>
-                        <td>000 / &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; / DPMPTSP / V / 2026</td>
-                    </tr>
-                    <tr>
-                        <td>Sifat</td>
-                        <td class="w-sep">:</td>
-                        <td>Penting</td>
-                    </tr>
-                    <tr>
-                        <td>Lampiran</td>
-                        <td class="w-sep">:</td>
-                        <td>1 (Satu) Lembar</td>
-                    </tr>
-                    <tr>
-                        <td>Perihal</td>
-                        <td class="w-sep">:</td>
-                        <td class="font-bold underline uppercase">Undangan Rapat Koordinasi</td>
-                    </tr>
+                    <tr><td class="w-label">Nomor</td><td class="w-sep">:</td><td id="print-no-surat" class="font-bold">-</td></tr>
+                    <tr><td>Sifat</td><td>:</td><td>Penting</td></tr>
+                    <tr><td>Lampiran</td><td>:</td><td id="print-lampiran">-</td></tr>
+                    <tr><td>Perihal</td><td>:</td><td class="font-bold underline uppercase">Undangan Rapat</td></tr>
                 </table>
             </div>
-            <div class="text-right text-[12pt]">
-                <p>Bungku, 09 Mei 2026</p>
-            </div>
+            <div class="text-right text-[12pt] font-bold"><p>Bungku, <span id="print-tgl-sekarang">-</span></p></div>
         </div>
 
         <div class="mt-8 text-[12pt]">
-            <p>Yth. <span class="font-bold">Daftar Terlampir</span></p>
-            <p>di -</p>
-            <p class="ml-8 mt-1">Tempat</p>
+            <p>Yth. <span class="font-bold" id="print-tujuan">Daftar Terlampir</span></p>
+            <p>di -</p><p class="ml-10 mt-1 uppercase font-bold">Tempat</p>
         </div>
 
         <div class="mt-8 text-[12pt] text-justify leading-relaxed">
-            <p style="text-indent: 48px;">Sehubungan dengan rencana pelaksanaan program kerja tahun anggaran 2026, kami mengundang kehadiran Bapak/Ibu untuk mengikuti rapat koordinasi yang akan dilaksanakan pada:</p>
-            
+            <p style="text-indent: 48px;">Sehubungan dengan pelaksanaan program kerja pada Dinas Penanaman Modal dan Pelayanan Terpadu Satu Pintu Kabupaten Morowali, dengan ini kami mengundang Bapak/Ibu/Saudara(i) untuk hadir dalam rapat yang akan dilaksanakan pada:</p>
             <table class="table-fixed-dots mt-4" style="margin-left: 48px; width: auto;">
-                <tr>
-                    <td style="width: 120px;">Hari / Tanggal</td>
-                    <td class="w-sep">:</td>
-                    <td class="font-bold italic">Kamis, 14 Mei 2026</td>
-                </tr>
-                <tr>
-                    <td>Waktu</td>
-                    <td class="w-sep">:</td>
-                    <td>09.00 WITA s.d. Selesai</td>
-                </tr>
-                <tr>
-                    <td>Tempat</td>
-                    <td class="w-sep">:</td>
-                    <td>Ruang Rapat DPMPTSP Morowali</td>
-                </tr>
+                <tr><td style="width: 130px;">Hari / Tanggal</td><td class="w-sep">:</td><td class="font-bold uppercase" id="print-rapat-tgl">-</td></tr>
+                <tr><td>Waktu</td><td class="w-sep">:</td><td class="font-bold" id="print-rapat-jam">-</td></tr>
+                <tr><td>Tempat</td><td class="w-sep">:</td><td class="font-bold" id="print-rapat-lokasi">-</td></tr>
+                <tr><td>Agenda</td><td class="w-sep">:</td><td class="italic font-bold" id="print-rapat-nama">-</td></tr>
             </table>
-
-            <p style="text-indent: 48px;" class="mt-4">Mengingat pentingnya agenda tersebut, kami sangat mengharapkan kehadiran Bapak/Ibu tepat pada waktunya. Demikian undangan ini disampaikan, atas perhatiannya diucapkan terima kasih.</p>
+            <p style="text-indent: 48px;" class="mt-4">Demikian undangan ini kami sampaikan. Mengingat pentingnya acara tersebut, sangat diharapkan kehadiran Bapak/Ibu tepat pada waktunya. Atas perhatian dan kerjasamanya diucapkan terima kasih.</p>
         </div>
 
         <div class="mt-16 flex justify-end">
-            <div class="text-center" style="width: 250px;">
+            <div class="text-center" style="width: 300px;">
                 <p class="font-bold uppercase">Kepala Dinas,</p>
-                <div class="h-24"></div> <p class="font-bold underline uppercase">NAMA KEPALA DINAS, S.Sos</p>
+                <div class="h-28"></div> 
+                <p class="font-bold underline uppercase">ELYTA GAWI, S.T., M.T.</p>
                 <p class="text-[11pt]">Pembina Utama Muda, IV/c</p>
-                <p class="text-[11pt]">NIP. 19700101 199001 1 001</p>
+                <p class="text-[11pt]">NIP. 19761212 200212 2 006</p>
             </div>
         </div>
     </div>
 
+    <div class="paper page-break hidden" id="area-lampiran">
+        <div class="text-[12pt] mb-4">
+            <table class="table-fixed-dots" style="width: auto;">
+                <tr><td style="width: 140px;">Lampiran Nomor</td><td class="w-sep">:</td><td id="lamp-no-surat">-</td></tr>
+                <tr><td>Tanggal</td><td class="w-sep">:</td><td id="lamp-tgl-surat">-</td></tr>
+            </table>
+        </div>
+        <div class="text-center my-8"><h3 class="font-bold underline uppercase text-[12pt]">DAFTAR UNDANGAN</h3></div>
+        <table class="table-undangan">
+            <thead class="bg-slate-50"><tr><th style="width: 50px; text-align:center;">NO</th><th>INSTANSI / JABATAN / NAMA</th><th style="width: 150px; text-align:center;">KETERANGAN</th></tr></thead>
+            <tbody id="tabel-undangan-body"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKE3Se0Y-Kouz4McrLaEo6k7kbq-ee_ZNQVt8SwLVsxUiS2yMCF1ooDSJlAkd5eThIkw/exec";
+        const urlParams = new URLSearchParams(window.location.search);
+        const idRapat = urlParams.get('id');
+        const noSurat = urlParams.get('no');
+
+        // Fungsi Super Cerdas Untuk Ekstrak Jam (Mengatasi error format Sheets)
+        function formatWaktu(waktuRaw) {
+            if (!waktuRaw) return "-";
+            const str = String(waktuRaw).trim();
+            // Jika formatnya T (cth: 1899-12-30T10:10:00)
+            if (str.includes('T')) return str.split('T')[1].substring(0, 5);
+            // Jika formatnya angka/teks biasa (cth: 10:10 atau 10.10)
+            if (str.length >= 5) {
+                // Konversi titik jadi titik dua agar seragam
+                return str.substring(0, 5).replace('.', ':');
+            }
+            return str;
+        }
+
+        async function init() {
+            if(!idRapat) return;
+            document.getElementById('print-no-surat').innerText = noSurat || "-";
+            document.getElementById('lamp-no-surat').innerText = noSurat || "-";
+            
+            const optionsTgl = { day: '2-digit', month: 'long', year: 'numeric' };
+            const skrg = new Date().toLocaleDateString('id-ID', optionsTgl);
+            document.getElementById('print-tgl-sekarang').innerText = skrg;
+            document.getElementById('lamp-tgl-surat').innerText = skrg;
+
+            try {
+                const res = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ formType: 'getDetailRapat', idRapat: idRapat }) });
+                const resData = await res.json();
+                
+                if(resData.status === 'success') {
+                    const r = resData.data;
+                    document.getElementById('print-rapat-nama').innerText = r.nama;
+                    document.getElementById('print-rapat-tgl').innerText = new Date(r.tgl).toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+                    document.getElementById('print-rapat-lokasi').innerText = r.lokasi;
+                    
+                    // Eksekusi fungsi perbaikan waktu
+                    document.getElementById('print-rapat-jam').innerText = formatWaktu(r.waktu) + " WITA s.d. Selesai";
+
+                    if(r.jenis === "Lintas OPD") {
+                        document.getElementById('print-lampiran').innerText = "1 (Satu) Lembar";
+                        document.getElementById('area-lampiran').classList.remove('hidden');
+                        document.getElementById('print-tujuan').innerText = "Daftar Terlampir";
+                        
+                        const tbody = document.getElementById('tabel-undangan-body');
+                        const list = (r.daftarUndangan || "").split(/[,\n]+/).filter(x => x.trim() !== "");
+                        tbody.innerHTML = "";
+                        
+                        if(list.length > 0) {
+                            list.forEach((item, i) => { tbody.innerHTML += `<tr><td style="text-align:center;">${i+1}</td><td>${item.trim()}</td><td style="text-align:center;">Hadir</td></tr>`; });
+                        } else {
+                            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:gray;'>Data instansi belum diisi saat membuat rapat.</td></tr>";
+                        }
+                    } else {
+                        document.getElementById('print-tujuan').innerText = "Seluruh Pegawai DPMPTSP";
+                        document.getElementById('print-lampiran').innerText = "-";
+                    }
+                }
+            } catch(e) { console.error(e); }
+        }
+        window.onload = init;
+    </script>
 </body>
 </html>

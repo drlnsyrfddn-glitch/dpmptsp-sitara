@@ -6,31 +6,30 @@
     <title>SITARA Admin - Morowali</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- MENGHUBUNGKAN SWEETALERT2 UNTUK NOTIFIKASI -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- MENGHUBUNGKAN CHART.JS UNTUK GRAFIK STATISTIK -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style> 
-        body { font-family: 'Inter', sans-serif; } 
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; } 
         .animate-fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         /* Kustomisasi font SweetAlert agar senada dengan Inter */
         div:where(.swal2-container) div:where(.swal2-popup) { font-family: 'Inter', sans-serif; border-radius: 1.5rem; }
+        
+        .modal { transition: opacity 0.25s ease; position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-overlay { position: absolute; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.7); backdrop-filter: blur(5px); }
+        .custom-shadow { box-shadow: 0 10px 50px -12px rgba(0, 0, 0, 0.1); }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-700 min-h-screen">
+<body class="min-h-screen">
 
-    <!-- NAVBAR ATAS -->
     <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-8">
                 <div class="flex items-center gap-3">
                     <img src="assets/img/morowali.png" class="h-8 w-auto" alt="Logo">
                     <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">SITARA <span class="font-normal text-slate-400 text-lg">Dashboard</span></h1>
-                </div>
-                <div class="hidden md:flex items-center gap-6">
-                    <a href="#" class="text-sm font-bold text-slate-900 border-b-2 border-slate-900 pb-1">Dashboard</a>
                 </div>
             </div>
             <div class="flex items-center gap-4">
@@ -43,17 +42,19 @@
         </div>
     </nav>
 
-    <main class="p-6 max-w-7xl mx-auto animate-fade-in">
-        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 mt-4 gap-4">
+    <main class="p-6 max-w-7xl mx-auto animate-fade-in space-y-10">
+        
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-4 gap-4">
             <div>
-                <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Ringkasan Rapat</h2>
-                <p class="text-xs text-slate-400">DPMPTSP Kabupaten Morowali</p>
+                <h2 class="text-2xl font-black text-slate-800 tracking-tight uppercase">Dashboard Utama</h2>
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Manajemen Agenda & Presensi Digital</p>
             </div>
-            <button onclick="toggleModal('modal-rapat', true)" class="bg-[#0f172a] text-white px-8 py-3 rounded-2xl text-xs font-extrabold shadow-lg hover:bg-slate-800 transition-all uppercase tracking-widest active:scale-95">+ BUAT AGENDA BARU</button>
+            <button onclick="toggleModal('modal-rapat', true)" class="bg-[#0f172a] text-white px-8 py-3 rounded-2xl text-xs font-extrabold shadow-lg hover:bg-slate-800 transition-all uppercase tracking-widest active:scale-95 flex items-center gap-2">
+                <i class="fa-solid fa-plus-circle text-lg"></i> BUAT AGENDA BARU
+            </button>
         </header>
 
-        <!-- PANEL STATISTIK ANGKA -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-200 flex flex-col justify-center items-center text-center">
                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Total Agenda</span>
                 <span id="stat-total" class="text-3xl font-extrabold text-slate-900">0</span>
@@ -74,39 +75,35 @@
             </div>
         </div>
 
-        <!-- PANEL GRAFIK STATISTIK (CHART.JS) -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <!-- Grafik Batang: Tren Rapat -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-200">
                 <div class="flex items-center justify-between mb-6">
                     <h5 class="text-sm font-bold text-slate-800 uppercase tracking-widest ml-2">Tren Kegiatan Rapat</h5>
                     <span class="text-[9px] bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-bold">Tahun Ini</span>
                 </div>
-                <div class="h-64">
-                    <canvas id="chartTren"></canvas>
-                </div>
+                <div class="h-64"><canvas id="chartTren"></canvas></div>
             </div>
-
-            <!-- Grafik Pie: Jenis Rapat -->
             <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-200">
                 <div class="flex items-center justify-between mb-6">
                     <h5 class="text-sm font-bold text-slate-800 uppercase tracking-widest ml-2">Distribusi Jenis Rapat</h5>
                     <span class="text-[9px] bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full font-bold">Total</span>
                 </div>
-                <div class="h-64 flex justify-center">
-                    <canvas id="chartJenis"></canvas>
-                </div>
+                <div class="h-64 flex justify-center"><canvas id="chartJenis"></canvas></div>
             </div>
         </div>
 
-        <!-- TABEL DAFTAR AGENDA -->
-        <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden mb-12">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/30">
-                <h5 class="font-bold text-slate-800 text-sm">Daftar Agenda Terkini</h5>
-                <button onclick="muatDataRapat()" class="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest hover:underline flex items-center gap-1">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    Refresh Data
-                </button>
+        <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden mb-12 custom-shadow">
+            <div class="p-8 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-50/30">
+                <h5 class="font-bold text-slate-800 text-sm uppercase">Daftar Agenda Terkini</h5>
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <div class="relative flex-1 md:w-72">
+                        <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="pencarian" onkeyup="filterTabel()" placeholder="Cari nama agenda..." class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 font-semibold text-sm shadow-sm">
+                    </div>
+                    <button onclick="muatDataRapat()" class="p-3.5 bg-white text-slate-400 hover:text-blue-600 rounded-2xl transition-all border border-slate-200 shadow-sm" title="Refresh Data">
+                        <i class="fa-solid fa-rotate"></i>
+                    </button>
+                </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse min-w-[800px]">
@@ -115,7 +112,7 @@
                             <th class="px-8 py-5 w-1/3">Nama Agenda</th>
                             <th class="px-4 py-5 text-center">Waktu & Tempat</th>
                             <th class="px-4 py-5 text-center">Aksi / Kontrol</th>
-                            <th class="px-8 py-5 text-center">Status</th>
+                            <th class="px-8 py-5 text-center">Status Sesi</th>
                         </tr>
                     </thead>
                     <tbody id="tabel-rapat-body" class="divide-y divide-slate-50">
@@ -126,29 +123,30 @@
         </div>
     </main>
 
-    <!-- ==================== KUMPULAN MODAL ==================== -->
-    
-    <!-- Modal Tambah Agenda -->
-    <div id="modal-rapat" class="fixed inset-0 z-[120] hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-        <div class="absolute inset-0" onclick="toggleModal('modal-rapat', false)"></div>
-        <div class="bg-white rounded-[2.5rem] w-full max-w-md p-8 shadow-2xl space-y-5 relative z-10">
+    <div id="modal-rapat" class="modal opacity-0 pointer-events-none transition-all duration-300">
+        <div class="modal-overlay" onclick="toggleModal('modal-rapat', false)"></div>
+        <div class="bg-white rounded-[2.5rem] w-full max-w-md p-8 shadow-2xl space-y-5 relative z-10 animate-fade-in">
             <div class="flex justify-between items-center">
                 <h5 class="font-extrabold text-slate-900 text-xl tracking-tight">Buat Agenda Baru</h5>
                 <button onclick="toggleModal('modal-rapat', false)" class="text-slate-400 hover:text-slate-900 text-2xl">&times;</button>
             </div>
             <div class="space-y-4">
-                <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Agenda</label><input type="text" id="in-nama" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#0f172a] transition-all"></div>
+                <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Agenda</label><input type="text" id="in-nama" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#0f172a] transition-all font-bold"></div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tanggal</label><input type="date" id="in-tgl" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none"></div>
-                    <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Jam</label><input type="time" id="in-jam" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none"></div>
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tanggal</label><input type="date" id="in-tgl" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none font-bold"></div>
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Jam</label><input type="time" id="in-jam" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none font-bold"></div>
                 </div>
-                <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Lokasi Rapat</label><input type="text" id="in-lokasi" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#0f172a] transition-all"></div>
+                <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Lokasi Rapat</label><input type="text" id="in-lokasi" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#0f172a] transition-all font-bold"></div>
                 <div>
                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Jenis Rapat</label>
-                    <select id="in-jenis" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none bg-white font-semibold">
+                    <select id="in-jenis" onchange="toggleDaftarUndangan('in')" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none bg-white font-bold text-sm">
                         <option value="Internal">Internal (DPMPTSP)</option>
                         <option value="Lintas OPD">Lintas OPD (Umum)</option>
                     </select>
+                </div>
+                <div id="div-in-daftar" class="hidden animate-fade-in">
+                    <label class="text-[10px] font-bold text-blue-500 uppercase tracking-widest ml-1">Daftar Instansi / OPD (Pisahkan Koma)</label>
+                    <textarea id="in-daftar-undangan" placeholder="Contoh: Dinas Kominfo, Bagian Hukum..." class="w-full mt-1 p-3.5 bg-blue-50 border border-blue-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 font-semibold text-sm h-24"></textarea>
                 </div>
             </div>
             <div class="flex gap-3 pt-2">
@@ -158,28 +156,31 @@
         </div>
     </div>
 
-    <!-- Modal Edit Agenda -->
-    <div id="modal-edit-rapat" class="fixed inset-0 z-[125] hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
-        <div class="absolute inset-0" onclick="toggleModal('modal-edit-rapat', false)"></div>
-        <div class="bg-white rounded-[2.5rem] w-full max-w-md p-8 shadow-2xl space-y-5 relative z-10">
+    <div id="modal-edit-rapat" class="modal opacity-0 pointer-events-none transition-all duration-300">
+        <div class="modal-overlay" onclick="toggleModal('modal-edit-rapat', false)"></div>
+        <div class="bg-white rounded-[2.5rem] w-full max-w-md p-8 shadow-2xl space-y-5 relative z-10 animate-fade-in">
             <div class="flex justify-between items-center">
                 <h5 class="font-extrabold text-slate-900 text-xl tracking-tight">Edit Agenda Rapat</h5>
                 <button onclick="toggleModal('modal-edit-rapat', false)" class="text-slate-400 hover:text-slate-900 text-2xl">&times;</button>
             </div>
             <div class="space-y-4">
                 <input type="hidden" id="edit-id">
-                <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Agenda</label><input type="text" id="edit-nama" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 transition-all"></div>
+                <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Agenda</label><input type="text" id="edit-nama" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 transition-all font-bold"></div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tanggal</label><input type="date" id="edit-tgl" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none"></div>
-                    <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Jam</label><input type="time" id="edit-jam" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none"></div>
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tanggal</label><input type="date" id="edit-tgl" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none font-bold"></div>
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Jam</label><input type="time" id="edit-jam" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none font-bold"></div>
                 </div>
-                <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Lokasi</label><input type="text" id="edit-lokasi" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 transition-all"></div>
+                <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Lokasi</label><input type="text" id="edit-lokasi" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 transition-all font-bold"></div>
                 <div>
                     <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Jenis Rapat</label>
-                    <select id="edit-jenis" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none bg-white font-semibold">
+                    <select id="edit-jenis" onchange="toggleDaftarUndangan('edit')" class="w-full mt-1 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none bg-white font-bold text-sm">
                         <option value="Internal">Internal (DPMPTSP)</option>
                         <option value="Lintas OPD">Lintas OPD (Umum)</option>
                     </select>
+                </div>
+                <div id="div-edit-daftar" class="hidden animate-fade-in">
+                    <label class="text-[10px] font-bold text-blue-500 uppercase tracking-widest ml-1">Daftar Instansi / OPD</label>
+                    <textarea id="edit-daftar-undangan" class="w-full mt-1 p-3.5 bg-blue-50 border border-blue-100 rounded-2xl outline-none focus:ring-2 focus:ring-blue-600 font-semibold text-sm h-24"></textarea>
                 </div>
             </div>
             <div class="flex gap-3 pt-2">
@@ -189,27 +190,17 @@
         </div>
     </div>
 
-    <!-- Modals QR Absen, Link Notulis, QR Hasil, Pantau Peserta -->
-    <div id="modal-qr" class="fixed inset-0 z-[130] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in"><div class="absolute inset-0" onclick="toggleModal('modal-qr', false)"></div><div class="bg-white rounded-[2.5rem] p-8 w-full max-w-sm text-center shadow-2xl relative z-10"><h5 id="qr-nama-rapat" class="font-bold text-slate-900 text-lg mb-1">Nama Rapat</h5><p class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-6">Scan QR untuk Daftar Hadir</p><div id="qrcode" class="my-6 mx-auto flex justify-center bg-white p-4 border border-slate-100 rounded-2xl shadow-inner"></div><button onclick="toggleModal('modal-qr', false)" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-lg">Tutup</button></div></div>
-    
-    <div id="modal-link-notulis" class="fixed inset-0 z-[135] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in"><div class="absolute inset-0" onclick="toggleModal('modal-link-notulis', false)"></div><div class="bg-white rounded-[2.5rem] p-8 w-full max-w-sm text-center shadow-2xl relative z-10"><h5 id="notulis-nama-rapat" class="font-bold text-slate-900 text-lg mb-1">Nama Rapat</h5><p class="text-[10px] text-amber-600 font-bold uppercase tracking-widest mb-6">Akses Petugas Notulensi</p><div id="qrcode-link-notulis" class="my-6 mx-auto flex justify-center bg-white p-4 border border-amber-100 rounded-2xl shadow-inner"></div><div class="flex flex-col gap-3"><button id="btn-copy-notulis" class="w-full py-4 bg-amber-50 text-amber-700 rounded-2xl font-bold uppercase text-[10px] tracking-widest border border-amber-200 hover:bg-amber-100 transition-all active:scale-95">Salin Link (Copy)</button><button onclick="toggleModal('modal-link-notulis', false)" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-lg">Tutup</button></div></div></div>
-    
-    <div id="modal-qr-notulen" class="fixed inset-0 z-[130] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in"><div class="absolute inset-0" onclick="toggleModal('modal-qr-notulen', false)"></div><div class="bg-white rounded-[2.5rem] p-8 w-full max-w-sm text-center shadow-2xl relative z-10"><h5 id="qr-nama-notulen" class="font-bold text-slate-900 text-lg mb-1">Nama Rapat</h5><p class="text-[10px] text-purple-600 font-bold uppercase tracking-widest mb-6">Scan QR untuk Baca Hasil Rapat</p><div id="qrcode-notulen" class="my-6 mx-auto flex justify-center bg-white p-4 border border-purple-100 rounded-2xl shadow-inner"></div><button onclick="toggleModal('modal-qr-notulen', false)" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-lg">Tutup</button></div></div>
-    
-    <div id="modal-pantau" class="fixed inset-0 z-[140] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in"><div class="absolute inset-0" onclick="toggleModal('modal-pantau', false)"></div><div class="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative z-10"><div class="p-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center text-left"><div><h5 id="pantau-nama-rapat" class="font-bold text-slate-900">Daftar Kehadiran</h5><p id="pantau-total" class="text-[10px] text-blue-600 font-extrabold uppercase mt-1 tracking-widest">Total: 0 Peserta</p></div><button onclick="toggleModal('modal-pantau', false)" class="text-slate-400 hover:text-slate-900 text-3xl">&times;</button></div><div id="list-peserta" class="p-6 overflow-y-auto min-h-[300px]"></div><div class="p-6 border-t border-slate-100 bg-slate-50/50"><button onclick="toggleModal('modal-pantau', false)" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-md">Tutup Pemantauan</button></div></div></div>
+    <div id="modal-qr" class="modal opacity-0 pointer-events-none"><div class="modal-overlay" onclick="toggleModal('modal-qr', false)"></div><div class="bg-white rounded-[2.5rem] p-8 w-full max-w-sm text-center shadow-2xl relative z-10 animate-fade-in"><h5 id="qr-nama-rapat" class="font-bold text-slate-900 text-lg mb-1">Nama Rapat</h5><p class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-6">Scan QR untuk Daftar Hadir</p><div id="qrcode" class="my-6 mx-auto flex justify-center bg-white p-4 border border-slate-100 rounded-2xl shadow-inner"></div><button onclick="toggleModal('modal-qr', false)" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-lg">Tutup</button></div></div>
+    <div id="modal-link-notulis" class="modal opacity-0 pointer-events-none"><div class="modal-overlay" onclick="toggleModal('modal-link-notulis', false)"></div><div class="bg-white rounded-[2.5rem] p-8 w-full max-w-sm text-center shadow-2xl relative z-10 animate-fade-in"><h5 id="notulis-nama-rapat" class="font-bold text-slate-900 text-lg mb-1">Nama Rapat</h5><p class="text-[10px] text-amber-600 font-bold uppercase tracking-widest mb-6">Akses Petugas Notulensi</p><div id="qrcode-link-notulis" class="my-6 mx-auto flex justify-center bg-white p-4 border border-amber-100 rounded-2xl shadow-inner"></div><div class="flex flex-col gap-3"><button id="btn-copy-notulis" class="w-full py-4 bg-amber-50 text-amber-700 rounded-2xl font-bold uppercase text-[10px] tracking-widest border border-amber-200 hover:bg-amber-100 transition-all active:scale-95">Salin Link (Copy)</button><button onclick="toggleModal('modal-link-notulis', false)" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-lg">Tutup</button></div></div></div>
+    <div id="modal-qr-notulen" class="modal opacity-0 pointer-events-none"><div class="modal-overlay" onclick="toggleModal('modal-qr-notulen', false)"></div><div class="bg-white rounded-[2.5rem] p-8 w-full max-w-sm text-center shadow-2xl relative z-10 animate-fade-in"><h5 id="qr-nama-notulen" class="font-bold text-slate-900 text-lg mb-1">Nama Rapat</h5><p class="text-[10px] text-purple-600 font-bold uppercase tracking-widest mb-6">Scan QR untuk Baca Hasil Rapat</p><div id="qrcode-notulen" class="my-6 mx-auto flex justify-center bg-white p-4 border border-purple-100 rounded-2xl shadow-inner"></div><button onclick="toggleModal('modal-qr-notulen', false)" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-lg">Tutup</button></div></div>
+    <div id="modal-pantau" class="modal opacity-0 pointer-events-none"><div class="modal-overlay" onclick="toggleModal('modal-pantau', false)"></div><div class="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative z-10 animate-fade-in"><div class="p-8 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center text-left"><div><h5 id="pantau-nama-rapat" class="font-bold text-slate-900">Daftar Kehadiran</h5><p id="pantau-total" class="text-[10px] text-blue-600 font-extrabold uppercase mt-1 tracking-widest">Total: 0 Peserta</p></div><button onclick="toggleModal('modal-pantau', false)" class="text-slate-400 hover:text-slate-900 text-3xl">&times;</button></div><div id="list-peserta" class="p-6 overflow-y-auto min-h-[300px]"></div><div class="p-6 border-t border-slate-100 bg-slate-50/50"><button onclick="toggleModal('modal-pantau', false)" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-md">Tutup Pemantauan</button></div></div></div>
 
-    <!-- ==================== LOGIKA JAVASCRIPT ==================== -->
     <script>
-        // 1. PROTEKSI HALAMAN (SECURITY)
         const userStr = localStorage.getItem('sitaraUser');
-        if (!userStr) {
-            window.location.href = "login.html"; // Tendang jika belum login
-        }
+        if (!userStr) { window.location.href = "login.html"; }
 
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKE3Se0Y-Kouz4McrLaEo6k7kbq-ee_ZNQVt8SwLVsxUiS2yMCF1ooDSJlAkd5eThIkw/exec";
         let globalDataRapat = []; 
-        
-        // Variabel untuk menyimpan instance grafik
         let chartTrenInstance = null;
         let chartJenisInstance = null;
 
@@ -220,26 +211,32 @@
             muatDataRapat();
         };
 
-        function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); }
+        function toggleModal(id, show) { 
+            const m = document.getElementById(id);
+            if (show) m.classList.remove('opacity-0', 'pointer-events-none');
+            else m.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // Logic memunculkan textarea Daftar Undangan
+        function toggleDaftarUndangan(prefix) {
+            const jenis = document.getElementById(prefix + '-jenis').value;
+            const div = document.getElementById('div-' + prefix + '-daftar');
+            if (jenis === 'Lintas OPD') div.classList.remove('hidden');
+            else div.classList.add('hidden');
+        }
 
         // MENGGAMBAR GRAFIK STATISTIK CHART.JS
         function renderCharts(data) {
             const ctxTren = document.getElementById('chartTren').getContext('2d');
             const ctxJenis = document.getElementById('chartJenis').getContext('2d');
-
-            // Hitung data per bulan
             const bulanLabels = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"];
             const hitungPerBulan = new Array(12).fill(0);
-            
-            // Hitung jenis rapat
-            let countInternal = 0;
-            let countLintas = 0;
+            let countInternal = 0, countLintas = 0;
 
             data.forEach(r => {
                 const d = new Date(r.tgl);
                 hitungPerBulan[d.getMonth()]++;
-                if(r.jenis === 'Internal') countInternal++;
-                else countLintas++;
+                if(r.jenis === 'Internal') countInternal++; else countLintas++;
             });
 
             if(chartTrenInstance) chartTrenInstance.destroy();
@@ -247,36 +244,22 @@
 
             chartTrenInstance = new Chart(ctxTren, {
                 type: 'line',
-                data: {
-                    labels: bulanLabels,
-                    datasets: [{
-                        label: 'Agenda',
-                        data: hitungPerBulan,
-                        borderColor: '#0f172a',
-                        backgroundColor: 'rgba(15, 23, 42, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#0f172a'
-                    }]
-                },
+                data: { labels: bulanLabels, datasets: [{ label: 'Agenda', data: hitungPerBulan, borderColor: '#0f172a', backgroundColor: 'rgba(15, 23, 42, 0.1)', fill: true, tension: 0.4, borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#0f172a' }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } } }
             });
 
             chartJenisInstance = new Chart(ctxJenis, {
                 type: 'doughnut',
-                data: {
-                    labels: ['Internal', 'Lintas OPD'],
-                    datasets: [{
-                        data: [countInternal, countLintas],
-                        backgroundColor: ['#0f172a', '#10b981'],
-                        hoverOffset: 10,
-                        borderWidth: 0
-                    }]
-                },
+                data: { labels: ['Internal', 'Lintas OPD'], datasets: [{ data: [countInternal, countLintas], backgroundColor: ['#0f172a', '#10b981'], hoverOffset: 10, borderWidth: 0 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, font: { size: 10, weight: 'bold' } } } }, cutout: '70%' }
             });
+        }
+
+        // PENCARIAN
+        function filterTabel() {
+            const q = document.getElementById('pencarian').value.toLowerCase();
+            const rows = document.querySelectorAll('#tabel-rapat-body tr');
+            rows.forEach(r => { r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none'; });
         }
 
         // MEMUAT DATA RAPAT UTAMA
@@ -289,38 +272,38 @@
                 
                 if(res.status === "success") {
                     globalDataRapat = res.data; 
-                    
-                    // Update Angka
                     document.getElementById('stat-total').innerText = globalDataRapat.length;
                     document.getElementById('stat-aktif').innerText = globalDataRapat.filter(r => r.status === 'AKTIF').length;
                     document.getElementById('stat-selesai').innerText = globalDataRapat.filter(r => r.status !== 'AKTIF').length;
                     document.getElementById('stat-lintas').innerText = globalDataRapat.filter(r => r.jenis === 'Lintas OPD').length;
 
-                    // Update Grafik Chart.js
                     renderCharts(globalDataRapat);
 
-                    // Update Tabel
                     body.innerHTML = "";
                     res.data.reverse().forEach(r => {
                         const sClass = r.status === "AKTIF" ? "bg-emerald-500 shadow-emerald-100" : "bg-slate-400 shadow-slate-100";
+                        let jamDisplay = "-";
+                        if (r.waktu) { jamDisplay = r.waktu.includes('T') ? r.waktu.split('T')[1].substring(0,5) : r.waktu.substring(0,5); }
+                        
                         body.innerHTML += `
                             <tr class="hover:bg-slate-50 transition-all border-b border-slate-50">
                                 <td class="px-8 py-6"><p class="text-sm font-bold text-slate-900">${r.nama}</p><p class="text-[9px] text-slate-400 font-mono tracking-tighter uppercase mt-0.5">${r.id} | ${r.jenis}</p></td>
-                                <td class="px-4 py-6 text-[11px] font-semibold text-slate-500 text-center">${new Date(r.tgl).toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'})} <br> ${new Date(r.waktu).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})} WITA <br> ${r.lokasi}</td>
+                                <td class="px-4 py-6 text-[11px] font-semibold text-slate-500 text-center">${new Date(r.tgl).toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'})} <br> ${jamDisplay} WITA <br> ${r.lokasi}</td>
                                 <td class="px-4 py-6">
                                     <div class="grid grid-cols-2 gap-2 max-w-[200px] mx-auto">
                                         <button onclick="tampilkanQR('${r.id}', '${r.nama}')" class="text-[9px] font-bold bg-emerald-50 text-emerald-600 py-2 rounded-lg border border-emerald-100 uppercase transition-all hover:bg-emerald-600 hover:text-white" title="Tampilkan QR Absen">QR Absen</button>
                                         <button onclick="pantauPeserta('${r.id}', '${r.nama}', '${r.jenis}')" class="text-[9px] font-bold bg-blue-50 text-blue-600 py-2 rounded-lg border border-blue-100 uppercase transition-all hover:bg-blue-600 hover:text-white" title="Pantau Kehadiran">Pantau</button>
-                                        <button onclick="tampilkanModalNotulis('${r.id}', '${r.nama}')" class="text-[9px] font-bold bg-amber-50 text-amber-600 py-2 rounded-lg border border-amber-100 uppercase transition-all hover:bg-amber-600 hover:text-white" title="Berikan akses untuk Petugas Notulis">Link Notulis</button>
-                                        <button onclick="tampilkanQRNotulen('${r.id}', '${r.nama}')" class="text-[9px] font-bold bg-purple-50 text-purple-600 py-2 rounded-lg border border-purple-100 uppercase transition-all hover:bg-purple-600 hover:text-white" title="Tampilkan QR Hasil Rapat">QR Notulen</button>
-                                        <button onclick="window.open('baca-notulen.html?id=${r.id}', '_blank')" class="col-span-2 text-[9px] font-bold bg-slate-800 text-white py-2.5 rounded-lg border border-slate-700 uppercase transition-all hover:bg-slate-900 hover:shadow-md mt-1" title="Buka dan Cetak Dokumen Lengkap">🖨️ Cetak Laporan Full</button>
+                                        <button onclick="tampilkanModalNotulis('${r.id}', '${r.nama}')" class="text-[9px] font-bold bg-amber-50 text-amber-600 py-2 rounded-lg border border-amber-100 uppercase transition-all hover:bg-amber-600 hover:text-white" title="Berikan akses Notulis">Link Notulis</button>
+                                        <button onclick="tampilkanQRNotulen('${r.id}', '${r.nama}')" class="text-[9px] font-bold bg-purple-50 text-purple-600 py-2 rounded-lg border border-purple-100 uppercase transition-all hover:bg-purple-600 hover:text-white" title="QR Hasil Rapat">QR Notulen</button>
+                                        <button onclick="siapkanUndangan('${r.id}', '${r.nama}')" class="col-span-2 text-[9px] font-bold bg-teal-50 text-teal-600 py-2.5 rounded-lg border border-teal-100 uppercase transition-all hover:bg-teal-600 hover:text-white hover:shadow-md mt-1" title="Buat Surat Undangan Resmi">✉️ Cetak Undangan</button>
+                                        <button onclick="window.open('baca-notulen.html?id=${r.id}', '_blank')" class="col-span-2 text-[9px] font-bold bg-slate-800 text-white py-2.5 rounded-lg border border-slate-700 uppercase transition-all hover:bg-slate-900 hover:shadow-md mt-1" title="Buka Cetak Full">🖨️ Cetak Laporan Full</button>
                                     </div>
                                 </td>
                                 <td class="px-8 py-6 text-center">
                                     <button onclick="ubahStatus('${r.id}', '${r.status}')" class="${sClass} text-white px-4 py-1.5 rounded-lg text-[9px] font-extrabold shadow-lg w-full transition-all active:scale-95 mb-2">${r.status}</button>
                                     <div class="flex justify-center gap-3 border-t border-slate-200 pt-2">
-                                        <button onclick="bukaEditRapat('${r.id}')" class="text-[10px] font-bold text-slate-400 hover:text-blue-600 transition-all uppercase tracking-widest">Edit</button>
-                                        <button onclick="hapusRapat('${r.id}')" class="text-[10px] font-bold text-slate-400 hover:text-red-600 transition-all uppercase tracking-widest">Hapus</button>
+                                        <button onclick="bukaEditRapat('${r.id}')" class="text-[10px] font-bold text-slate-400 hover:text-blue-600 transition-all uppercase tracking-widest"><i class="fa-solid fa-pen"></i> Edit</button>
+                                        <button onclick="hapusRapat('${r.id}')" class="text-[10px] font-bold text-slate-400 hover:text-red-600 transition-all uppercase tracking-widest"><i class="fa-solid fa-trash"></i> Hapus</button>
                                     </div>
                                 </td>
                             </tr>`;
@@ -329,6 +312,23 @@
             } catch (err) { body.innerHTML = '<tr><td colspan="4" class="text-center py-20 text-red-400 text-[10px] font-bold">GAGAL MEMUAT DATA SERVER!</td></tr>'; }
         }
 
+        // FUNGSI SIAPKAN UNDANGAN (POP UP)
+        async function siapkanUndangan(id, nama) {
+            const { value: noSurat } = await Swal.fire({
+                title: 'Nomor Surat Undangan',
+                input: 'text',
+                inputValue: '000 /          / DPMPTSP / V / 2026',
+                inputLabel: 'Masukkan nomor surat resmi dari buku register',
+                showCancelButton: true,
+                confirmButtonColor: '#0f172a',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: 'Generate Undangan',
+                cancelButtonText: 'Batal'
+            });
+            if (noSurat) { window.open(`undangan.html?id=${id}&no=${encodeURIComponent(noSurat)}`, '_blank'); }
+        }
+
+        // SIMPAN & EDIT
         async function simpanRapat() {
             const data = { 
                 formType: 'buatRapat', 
@@ -336,25 +336,21 @@
                 tanggal: document.getElementById('in-tgl').value, 
                 waktu: document.getElementById('in-jam').value, 
                 lokasi: document.getElementById('in-lokasi').value, 
-                jenisRapat: document.getElementById('in-jenis').value 
+                jenisRapat: document.getElementById('in-jenis').value,
+                daftarUndangan: document.getElementById('in-daftar-undangan').value // DATA BARU
             };
+            if(!data.namaRapat || !data.tanggal || !data.lokasi) { return Swal.fire({ icon: 'warning', title: 'Data Tidak Lengkap', text: 'Mohon isi Nama, Tanggal, dan Lokasi!', confirmButtonColor: '#0f172a' }); }
             
-            if(!data.namaRapat || !data.tanggal || !data.lokasi) {
-                return Swal.fire({ icon: 'warning', title: 'Data Tidak Lengkap', text: 'Mohon isi Nama Agenda, Tanggal, dan Lokasi!', confirmButtonColor: '#0f172a' });
-            }
-            
-            const btn = document.getElementById('btn-simpan');
-            btn.innerText = "Processing..."; btn.disabled = true;
+            const btn = document.getElementById('btn-simpan'); btn.innerText = "Processing..."; btn.disabled = true;
             try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
-                const res = await response.json();
-                if(res.status === "success") {
+                const res = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
+                if((await res.json()).status === "success") {
                     toggleModal('modal-rapat', false);
-                    ['in-nama', 'in-tgl', 'in-jam', 'in-lokasi'].forEach(id => document.getElementById(id).value = "");
+                    ['in-nama', 'in-tgl', 'in-jam', 'in-lokasi', 'in-daftar-undangan'].forEach(id => document.getElementById(id).value = "");
                     Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Agenda berhasil dibuat!', timer: 1500, showConfirmButton: false });
                     muatDataRapat();
                 }
-            } catch (err) { Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal menghubungi server.' }); }
+            } catch (err) { Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal server.' }); }
             finally { btn.innerText = "Simpan Agenda"; btn.disabled = false; }
         }
 
@@ -364,80 +360,68 @@
                 document.getElementById('edit-id').value = rapat.id;
                 document.getElementById('edit-nama').value = rapat.nama;
                 document.getElementById('edit-tgl').value = rapat.tgl.split('T')[0];
-                const d = new Date(rapat.waktu);
-                document.getElementById('edit-jam').value = d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+                let jam = rapat.waktu || "";
+                if(jam.includes('T')) jam = jam.split('T')[1].substring(0,5);
+                document.getElementById('edit-jam').value = jam;
                 document.getElementById('edit-lokasi').value = rapat.lokasi;
                 document.getElementById('edit-jenis').value = rapat.jenis;
+                document.getElementById('edit-daftar-undangan').value = rapat.daftarUndangan || "";
+                toggleDaftarUndangan('edit');
                 toggleModal('modal-edit-rapat', true);
             }
         }
 
         async function simpanEditRapat() {
-            const id = document.getElementById('edit-id').value;
             const data = { 
-                formType: 'editRapat', idRapat: id,
+                formType: 'editRapat', idRapat: document.getElementById('edit-id').value,
                 namaRapat: document.getElementById('edit-nama').value, 
                 tanggal: document.getElementById('edit-tgl').value, 
                 waktu: document.getElementById('edit-jam').value, 
                 lokasi: document.getElementById('edit-lokasi').value, 
-                jenisRapat: document.getElementById('edit-jenis').value 
+                jenisRapat: document.getElementById('edit-jenis').value,
+                daftarUndangan: document.getElementById('edit-daftar-undangan').value
             };
-            
-            const btn = document.getElementById('btn-update-rapat');
-            btn.innerText = "Memproses..."; btn.disabled = true;
+            const btn = document.getElementById('btn-update-rapat'); btn.innerText = "Memproses..."; btn.disabled = true;
             try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
-                const res = await response.json();
-                if(res.status === "success") { 
+                const res = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify(data) });
+                if((await res.json()).status === "success") { 
                     toggleModal('modal-edit-rapat', false); 
-                    Swal.fire({ icon: 'success', title: 'Agenda Diupdate', timer: 1500, showConfirmButton: false });
+                    Swal.fire({ icon: 'success', title: 'Diupdate', timer: 1500, showConfirmButton: false });
                     muatDataRapat(); 
                 }
-            } catch (err) { Swal.fire('Gagal!', 'Data gagal diubah', 'error'); }
+            } catch (err) { Swal.fire('Gagal!', '', 'error'); }
             finally { btn.innerText = "Update Agenda"; btn.disabled = false; }
         }
 
         async function ubahStatus(id, s) {
             const baru = s === "AKTIF" ? "TIDAK AKTIF" : "AKTIF";
-            Swal.fire({
-                title: 'Ubah Status Agenda?',
-                text: `Status akan diubah menjadi ${baru}`,
-                icon: 'question', showCancelButton: true, confirmButtonColor: '#0f172a', cancelButtonColor: '#94a3b8',
-                confirmButtonText: 'Ya, Ubah!', cancelButtonText: 'Batal'
+            Swal.fire({ title: 'Ubah Status?', showCancelButton: true, confirmButtonColor: '#0f172a', confirmButtonText: 'Ya, Ubah!'
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     Swal.fire({ title: 'Memproses...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                     try {
                         await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ formType: 'updateStatusRapat', idRapat: id, statusBaru: baru }) });
-                        Swal.fire({ icon: 'success', title: 'Status Diperbarui!', timer: 1000, showConfirmButton: false });
+                        Swal.fire({ icon: 'success', title: 'Diperbarui!', timer: 1000, showConfirmButton: false });
                         muatDataRapat();
-                    } catch (err) { Swal.fire('Gagal!', 'Terjadi kesalahan jaringan.', 'error'); }
+                    } catch (err) { Swal.fire('Gagal!', '', 'error'); }
                 }
             });
         }
 
         async function hapusRapat(id) {
-            Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: "Agenda dan seluruh data notulensinya akan dihapus permanen!",
-                icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#64748b',
-                confirmButtonText: 'Ya, Hapus Data!', cancelButtonText: 'Batal'
+            Swal.fire({ title: 'Hapus Agenda?', text: "Data akan dihapus permanen!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Hapus!'
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                     try {
-                        const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ formType: 'hapusRapat', idRapat: id }) });
-                        const res = await response.json();
-                        if(res.status === "success") { 
-                            Swal.fire('Terhapus!', 'Agenda telah dibuang dari sistem.', 'success');
-                            muatDataRapat(); 
-                        } else { Swal.fire('Gagal', 'Sistem gagal menghapus', 'error'); }
-                    } catch (err) { Swal.fire('Gagal', 'Terjadi kesalahan jaringan', 'error'); }
+                        await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ formType: 'hapusRapat', idRapat: id }) });
+                        Swal.fire('Terhapus!', '', 'success'); muatDataRapat(); 
+                    } catch (err) { Swal.fire('Gagal', '', 'error'); }
                 }
             });
         }
 
-        // FUNGSI MODAL QR DAN PANTAU
+        // KUMPULAN MODAL (QR, LINK, PANTAU)
         function tampilkanQR(id, nama) {
             document.getElementById("qrcode").innerHTML = "";
             const currentPath = window.location.pathname; const dir = currentPath.substring(0, currentPath.lastIndexOf('/'));
@@ -453,21 +437,15 @@
             toggleModal('modal-pantau', true);
             document.getElementById('pantau-nama-rapat').innerText = nama;
             try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ formType: 'getPantauPeserta', idRapat: id, jenisRapat: jenis }) });
-                const res = await response.json();
+                const res = await (await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ formType: 'getPantauPeserta', idRapat: id, jenisRapat: jenis }) })).json();
                 if(res.status === "success") {
                     document.getElementById('pantau-total').innerText = `Total: ${res.total} Peserta`;
                     list.innerHTML = res.data.length === 0 ? '<p class="text-center py-10 text-xs text-slate-400">Belum ada absen.</p>' : "";
                     res.data.forEach((p, i) => {
-                        list.innerHTML += `
-                            <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 mb-3 shadow-sm hover:bg-white hover:shadow-md transition-all">
-                                <div class="h-8 w-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px] font-bold">${i + 1}</div>
-                                <div class="flex-1 min-w-0 text-left"><p class="text-sm font-bold text-slate-900 truncate">${p.nama}</p><p class="text-[9px] text-slate-400 font-bold uppercase tracking-tight">${p.instansi} • ${p.jabatan}</p></div>
-                                <div class="text-[10px] font-mono text-slate-400">${new Date(p.waktu).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</div>
-                            </div>`;
+                        list.innerHTML += `<div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 mb-3 shadow-sm hover:bg-white hover:shadow-md transition-all"><div class="h-8 w-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px] font-bold">${i + 1}</div><div class="flex-1 min-w-0 text-left"><p class="text-sm font-bold text-slate-900 truncate">${p.nama}</p><p class="text-[9px] text-slate-400 font-bold uppercase tracking-tight">${p.instansi} • ${p.jabatan}</p></div><div class="text-[10px] font-mono text-slate-400">${new Date(p.waktu).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</div></div>`;
                     });
                 }
-            } catch (err) { list.innerHTML = '<p class="text-center py-20 text-red-400 text-xs font-bold uppercase tracking-widest">Error koneksi!</p>'; }
+            } catch (err) { list.innerHTML = '<p class="text-center text-red-400 text-xs font-bold mt-10">Error koneksi!</p>'; }
         }
 
         function tampilkanModalNotulis(id, nama) {
@@ -476,11 +454,8 @@
             const link = window.location.origin + dir + '/isi-notulen.html?id=' + id;
             document.getElementById('notulis-nama-rapat').innerText = nama;
             new QRCode(document.getElementById("qrcode-link-notulis"), { text: link, width: 180, height: 180, colorDark : "#d97706" });
-            const btnCopy = document.getElementById('btn-copy-notulis');
-            btnCopy.onclick = function() {
-                navigator.clipboard.writeText(link).then(() => {
-                    Swal.fire({ icon: 'success', title: 'Link Tersalin!', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
-                }).catch(err => { alert("Gagal menyalin link."); });
+            document.getElementById('btn-copy-notulis').onclick = function() {
+                navigator.clipboard.writeText(link).then(() => { Swal.fire({ icon: 'success', title: 'Tersalin!', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 }); });
             };
             toggleModal('modal-link-notulis', true);
         }
@@ -495,13 +470,8 @@
         }
 
         function logout() { 
-            Swal.fire({
-                title: 'Keluar dari Sistem?',
-                icon: 'question', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Ya, Logout', cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    localStorage.removeItem('sitaraUser'); window.location.href = "login.html"; 
-                }
+            Swal.fire({ title: 'Keluar?', icon: 'question', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Logout' }).then((result) => {
+                if (result.isConfirmed) { localStorage.removeItem('sitaraUser'); window.location.href = "login.html"; }
             });
         }
     </script>
