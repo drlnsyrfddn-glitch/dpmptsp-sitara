@@ -24,8 +24,8 @@
 <body>
 
     <div class="no-print">
-        <button onclick="window.print()" class="bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg">CETAK SURAT</button>
-        <button onclick="window.close()" class="bg-white border border-slate-300 px-6 py-3 rounded-xl font-bold">TUTUP</button>
+        <button onclick="window.print()" class="bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-blue-800 transition-all">🖨️ CETAK SURAT</button>
+        <button onclick="window.close()" class="bg-white border border-slate-300 px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition-all">TUTUP</button>
     </div>
 
     <div class="paper">
@@ -95,27 +95,26 @@
     </div>
 
     <script>
+        // MASUKKAN URL TERBARU BAPAK DI SINI
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKE3Se0Y-Kouz4McrLaEo6k7kbq-ee_ZNQVt8SwLVsxUiS2yMCF1ooDSJlAkd5eThIkw/exec";
+        
         const urlParams = new URLSearchParams(window.location.search);
         const idRapat = urlParams.get('id');
         const noSurat = urlParams.get('no');
 
-        // Fungsi Super Cerdas Untuk Ekstrak Jam (Mengatasi error format Sheets)
         function formatWaktu(waktuRaw) {
             if (!waktuRaw) return "-";
             const str = String(waktuRaw).trim();
-            // Jika formatnya T (cth: 1899-12-30T10:10:00)
-            if (str.includes('T')) return str.split('T')[1].substring(0, 5);
-            // Jika formatnya angka/teks biasa (cth: 10:10 atau 10.10)
-            if (str.length >= 5) {
-                // Konversi titik jadi titik dua agar seragam
-                return str.substring(0, 5).replace('.', ':');
-            }
-            return str;
+            // Ambil 5 karakter pertama saja (misal "09:00:00" jadi "09:00")
+            return str.length >= 5 ? str.substring(0, 5) : str;
         }
 
         async function init() {
-            if(!idRapat) return;
+            if(!idRapat) {
+                document.body.innerHTML = "<h2 style='text-align:center; margin-top:50px; font-family:sans-serif;'>Akses tidak valid. ID Rapat tidak ditemukan.</h2>";
+                return;
+            }
+            
             document.getElementById('print-no-surat').innerText = noSurat || "-";
             document.getElementById('lamp-no-surat').innerText = noSurat || "-";
             
@@ -131,10 +130,18 @@
                 if(resData.status === 'success') {
                     const r = resData.data;
                     document.getElementById('print-rapat-nama').innerText = r.nama;
-                    document.getElementById('print-rapat-tgl').innerText = new Date(r.tgl).toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
-                    document.getElementById('print-rapat-lokasi').innerText = r.lokasi;
                     
-                    // Eksekusi fungsi perbaikan waktu
+                    // Format Tanggal (Menangani format yyyy-mm-dd dari getDisplayValues)
+                    let tglTampil = r.tgl;
+                    if(r.tgl && r.tgl.includes("-")) {
+                        const parts = r.tgl.split("-");
+                        if(parts.length === 3) {
+                            tglTampil = new Date(parts[0], parts[1]-1, parts[2]).toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+                        }
+                    }
+                    document.getElementById('print-rapat-tgl').innerText = tglTampil;
+                    
+                    document.getElementById('print-rapat-lokasi').innerText = r.lokasi;
                     document.getElementById('print-rapat-jam').innerText = formatWaktu(r.waktu) + " WITA s.d. Selesai";
 
                     if(r.jenis === "Lintas OPD") {
@@ -147,16 +154,18 @@
                         tbody.innerHTML = "";
                         
                         if(list.length > 0) {
-                            list.forEach((item, i) => { tbody.innerHTML += `<tr><td style="text-align:center;">${i+1}</td><td>${item.trim()}</td><td style="text-align:center;">Hadir</td></tr>`; });
+                            list.forEach((item, i) => { tbody.innerHTML += `<tr><td style="text-align:center;">${i+1}</td><td>${item.trim()}</td><td style="text-align:center;">Hadir / Mewakili</td></tr>`; });
                         } else {
-                            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:gray;'>Data instansi belum diisi saat membuat rapat.</td></tr>";
+                            tbody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:gray; padding:20px;'>Daftar instansi belum diisi saat membuat rapat. Silakan edit agenda di Dashboard.</td></tr>";
                         }
                     } else {
-                        document.getElementById('print-tujuan').innerText = "Seluruh Pegawai DPMPTSP";
+                        document.getElementById('print-tujuan').innerText = "Seluruh Pegawai DPMPTSP Kab. Morowali";
                         document.getElementById('print-lampiran').innerText = "-";
                     }
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) { 
+                console.error(e); 
+            }
         }
         window.onload = init;
     </script>
