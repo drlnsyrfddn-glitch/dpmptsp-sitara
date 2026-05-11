@@ -3,266 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rekap Dokumen Rapat - SITARA</title>
+    <title>Notula Rapat Resmi - SITARA</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style> 
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; } 
-        .paper-shadow { box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1), 0 0 10px rgba(0,0,0,0.02); }
-        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    <style>
+        @page { size: A4; margin: 0; }
+        body { background-color: #f1f5f9; font-family: "Times New Roman", Times, serif; color: black; margin: 0; padding: 0; }
+        .paper { background: white; width: 210mm; min-height: 297mm; margin: 20px auto; padding: 1.5cm 2.5cm 2cm 2.5cm; box-shadow: 0 0 15px rgba(0,0,0,0.1); position: relative; }
+        .kop-header { border-bottom: 4px solid black; padding-bottom: 5px; margin-bottom: 2px; text-align: center; }
+        .kop-header::after { content: ""; display: block; border-bottom: 1px solid black; margin-top: 2px; }
+        .judul-notula { text-align: center; font-size: 14pt; font-weight: bold; text-decoration: underline; margin-top: 20px; margin-bottom: 20px; letter-spacing: 2px; }
         
-        @media print {
-            @page { margin: 1.5cm; }
-            body, html { background-color: white !important; padding: 0 !important; height: auto !important; overflow: visible !important; }
-            main { max-width: 100% !important; margin: 0 !important; border-radius: 0 !important; box-shadow: none !important; overflow: visible !important; display: block !important; }
-            .no-print { display: none !important; }
-            .page-break { page-break-before: always; }
-        }
+        /* Tabel Info Border 0 Sesuai Request Bapak */
+        .table-info-rapat { width: 100%; border-collapse: collapse; border: 0; margin-bottom: 20px; font-size: 11pt; }
+        .table-info-rapat td { padding: 4px 0; vertical-align: top; border: 0; }
+        
+        .section-title { font-weight: bold; margin-top: 15px; font-size: 11pt; }
+        .section-content { text-align: justify; line-height: 1.5; font-size: 11pt; white-space: pre-line; padding-left: 10px; }
+        
+        .table-hadir { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .table-hadir th, .table-hadir td { border: 1px solid black; padding: 8px; font-size: 10pt; text-align: left; }
+        
+        .no-print { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; gap: 10px; }
+        @media print { body { background: white; } .paper { margin: 0; box-shadow: none; width: 100%; } .no-print { display: none !important; } .page-break { page-break-before: always; } }
     </style>
 </head>
-<body class="text-slate-800 p-4 md:p-8">
+<body>
 
-    <div class="no-print fixed top-6 right-6 z-50 flex gap-3">
-        <button onclick="window.print()" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg hover:bg-blue-700 hover:-translate-y-0.5 transition-all flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-            Cetak PDF
-        </button>
-        <button onclick="window.close()" class="bg-white border border-slate-200 text-slate-600 px-5 py-2.5 rounded-xl font-bold shadow-sm hover:bg-slate-50 transition-all">Tutup</button>
+    <div class="no-print">
+        <button onclick="window.print()" class="bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-blue-800 transition-all">🖨️ CETAK NOTULA</button>
+        <button onclick="window.close()" class="bg-white border border-slate-300 px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition-all">TUTUP</button>
     </div>
 
-    <div id="loading-area" class="max-w-4xl mx-auto bg-white rounded-2xl paper-shadow p-12 text-center mt-10">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mx-auto mb-4"></div>
-        <h2 class="text-xl font-bold text-slate-700">Menyiapkan Dokumen...</h2>
-        <p class="text-sm text-slate-500 mt-2">Menarik data dari database SITARA</p>
+    <div class="paper">
+        <div class="kop-header">
+            <div class="flex items-center justify-center relative">
+                <img src="assets/img/morowali.png" alt="Logo" class="absolute left-0 w-[70px] h-auto">
+                <div>
+                    <h1 class="text-[16pt] font-bold uppercase leading-tight">PEMERINTAH KABUPATEN MOROWALI</h1>
+                    <h2 class="text-[14pt] font-bold uppercase leading-tight">DINAS PENANAMAN MODAL DAN PELAYANAN<br>TERPADU SATU PINTU</h2>
+                    <p class="text-[10pt] mt-1 leading-tight">Alamat : Kompleks Perkantoran Bumi Fonuasingko Bungku Kode Pos 94973</p>
+                    <p class="text-[10pt] leading-tight">Email : dpmptsp@morowalikab.go.id Website : dpmptsp.morowalikab.go.id</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="judul-notula">NOTULA</div>
+
+        <table class="table-info-rapat">
+            <tr>
+                <td style="width: 25%;">Sidang / Rapat</td>
+                <td style="width: 3%; text-align: center;">:</td>
+                <td style="font-weight: bold;" id="view-nama-rapat">-</td>
+            </tr>
+            <tr>
+                <td>Hari / Tanggal</td>
+                <td style="text-align: center;">:</td>
+                <td id="view-tgl">-</td>
+            </tr>
+            <tr>
+                <td>Waktu Panggilan</td>
+                <td style="text-align: center;">:</td>
+                <td id="view-waktu">-</td>
+            </tr>
+            <tr>
+                <td>Tempat</td>
+                <td style="text-align: center;">:</td>
+                <td id="view-lokasi">-</td>
+            </tr>
+            <tr><td colspan="3"><hr style="border-top: 1px solid black; margin: 8px 0;"></td></tr>
+            <tr>
+                <td>Pimpinan Rapat</td>
+                <td style="text-align: center;">:</td>
+                <td style="font-weight: bold;" id="view-pimpinan">-</td>
+            </tr>
+            <tr>
+                <td>Sekretaris / Notulis</td>
+                <td style="text-align: center;">:</td>
+                <td id="view-sekretaris">-</td>
+            </tr>
+            <tr>
+                <td>Peserta Rapat</td>
+                <td style="text-align: center;">:</td>
+                <td>Terlampir (<span id="view-total-peserta">0</span> Orang)</td>
+            </tr>
+        </table>
+
+        <div class="section-title">1. Pembukaan :</div>
+        <div class="section-content" id="view-pembukaan">-</div>
+
+        <div class="section-title">2. Pembahasan / Jalannya Rapat :</div>
+        <div class="section-content" id="view-pembahasan">-</div>
+
+        <div class="section-title">3. Keputusan / Hasil Rapat :</div>
+        <div class="section-content font-bold" id="view-keputusan">-</div>
+
+        <div class="section-title">4. Penutup :</div>
+        <div class="section-content" id="view-penutup">-</div>
+
+        <div class="mt-16 flex justify-end">
+            <div class="text-center" style="width: 300px;">
+                <p>Bungku, <span id="view-tgl-ttd">-</span></p>
+                <p class="font-bold uppercase">Pimpinan Rapat,</p>
+                <div class="h-28"></div>
+                <p class="font-bold underline uppercase" id="sign-pimpinan">-</p>
+            </div>
+        </div>
     </div>
 
-    <div id="error-area" class="hidden max-w-4xl mx-auto bg-red-50 border border-red-200 rounded-2xl p-8 text-center mt-10">
-        <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        <h2 class="text-xl font-bold text-red-700 mb-2">Terjadi Kesalahan</h2>
-        <p id="error-msg" class="text-red-600 font-medium"></p>
+    <div class="paper page-break">
+        <div class="text-center mb-8">
+            <h3 class="font-bold text-[12pt] underline uppercase">DAFTAR HADIR PESERTA</h3>
+            <p class="text-[10pt] uppercase" id="lamp-nama-rapat">-</p>
+        </div>
+        <table class="table-hadir">
+            <thead class="bg-slate-50">
+                <tr>
+                    <th style="width: 40px; text-align:center;">NO</th>
+                    <th>NAMA / NIP</th>
+                    <th>INSTANSI / JABATAN</th>
+                    <th style="width: 140px; text-align:center;">TANDA TANGAN</th>
+                </tr>
+            </thead>
+            <tbody id="tabel-hadir-body"></tbody>
+        </table>
     </div>
 
-    <main id="content-area" class="hidden max-w-5xl mx-auto bg-white rounded-[2rem] paper-shadow animate-fade-in p-10 md:p-14">
-        
-        <header class="flex items-center gap-6 border-b-2 border-slate-100 pb-8 mb-8">
-            <img src="assets/img/morowali.png" alt="Logo Morowali" class="h-20 w-auto">
-            <div>
-                <h1 class="text-2xl font-black text-slate-900 tracking-tight uppercase">Rekapitulasi Hasil Rapat</h1>
-                <p class="text-sm font-semibold text-slate-500 mt-1 uppercase tracking-widest">SITARA - DPMPTSP Kab. Morowali</p>
-            </div>
-        </header>
-
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-2xl border border-slate-100 mb-8">
-            <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Agenda Rapat</p>
-                <p class="font-bold text-slate-800" id="print-acara">-</p>
-            </div>
-            <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Lokasi</p>
-                <p class="font-semibold text-slate-700" id="print-tempat">-</p>
-            </div>
-            <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Tanggal & Waktu</p>
-                <p class="font-semibold text-slate-700"><span id="print-hari">-</span> • <span id="print-waktu">-</span></p>
-            </div>
-            <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Pimpinan Rapat / Notulis</p>
-                <p class="font-semibold text-slate-700"><span id="print-pimpinan">-</span> / <span id="print-notulis">-</span></p>
-            </div>
-        </section>
-
-        <section class="space-y-8">
-            <div>
-                <h3 class="flex items-center gap-2 text-lg font-bold text-slate-800 mb-3">
-                    <span class="bg-blue-100 text-blue-600 p-1.5 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg></span>
-                    Pembahasan Pokok
-                </h3>
-                <div id="print-pembahasan" class="whitespace-pre-wrap text-slate-600 leading-relaxed bg-white border border-slate-200 p-6 rounded-2xl">Memuat...</div>
-            </div>
-
-            <div>
-                <h3 class="flex items-center gap-2 text-lg font-bold text-slate-800 mb-3">
-                    <span class="bg-emerald-100 text-emerald-600 p-1.5 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></span>
-                    Kesimpulan & Hasil
-                </h3>
-                <div id="print-kesimpulan" class="whitespace-pre-wrap font-semibold text-slate-800 leading-relaxed bg-emerald-50 border border-emerald-100 p-6 rounded-2xl">Memuat...</div>
-            </div>
-        </section>
-
-        <section class="mt-12 pt-8 border-t border-slate-100 flex justify-between px-10">
-            <div class="text-center">
-                <p class="text-sm font-semibold text-slate-500 mb-16">Pencatat (Notulis)</p>
-                <p class="font-bold text-slate-800" id="ttd-notulis">-</p>
-                <p class="text-xs text-slate-500" id="nip-notulis">NIP. -</p>
-            </div>
-            <div class="text-center">
-                <p class="text-sm font-semibold text-slate-500 mb-16">Mengetahui, Pimpinan Rapat</p>
-                <p class="font-bold text-slate-800" id="ttd-pimpinan">-</p>
-                <p class="text-xs text-slate-500" id="nip-pimpinan">NIP. -</p>
-            </div>
-        </section>
-
-        <section id="area-dokumentasi" class="page-break mt-16 pt-10">
-            <h3 class="text-xl font-black text-slate-800 uppercase tracking-tight mb-6 flex items-center gap-3">
-                <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                Lampiran I: Dokumentasi Kegiatan
-            </h3>
-            <div class="grid grid-cols-2 gap-6" id="dok-container"></div>
-        </section>
-
-        <section class="page-break mt-16 pt-10">
-            <h3 class="text-xl font-black text-slate-800 uppercase tracking-tight mb-6 flex items-center gap-3">
-                <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                Lampiran II: Daftar Hadir Peserta
-            </h3>
-
-            <div class="overflow-hidden rounded-xl border border-slate-200">
-                <table class="w-full text-sm text-left text-slate-700">
-                    <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
-                        <tr>
-                            <th class="px-4 py-4 text-center w-12 border-r border-slate-200">No</th>
-                            <th class="px-4 py-4 border-r border-slate-200">Identitas Peserta</th>
-                            <th class="px-4 py-4 border-r border-slate-200">Instansi & Jabatan</th>
-                            <th class="px-4 py-4 text-center w-40">Tanda Tangan</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabel-peserta-body" class="divide-y divide-slate-200 bg-white">
-                        </tbody>
-                </table>
-            </div>
-        </section>
-
-        <footer class="mt-16 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest border-t border-slate-100 pt-6">
-            &copy; 2026 Powered by FOUNDERLAN &bull; Generated Automatically
-        </footer>
-
-    </main>
+    <div class="paper page-break hidden" id="area-dokumentasi">
+        <div class="text-center mb-8">
+            <h3 class="font-bold text-[12pt] underline uppercase">DOKUMENTASI KEGIATAN</h3>
+        </div>
+        <div id="grid-foto" class="grid grid-cols-2 gap-6"></div>
+    </div>
 
     <script>
+        // MASUKKAN URL WEB APP BAPAK DI SINI
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKE3Se0Y-Kouz4McrLaEo6k7kbq-ee_ZNQVt8SwLVsxUiS2yMCF1ooDSJlAkd5eThIkw/exec";
         const urlParams = new URLSearchParams(window.location.search);
         const idRapat = urlParams.get('id');
 
-        function formatDriveUrl(url) {
-            if (url && url.includes('drive.google.com/file/d/')) {
-                const id = url.split('/d/')[1].split('/')[0];
-                return `https://lh3.googleusercontent.com/d/${id}`;
+        // PERBAIKAN JALUR BELAKANG GOOGLE DRIVE (THUMBNAIL API)
+        function fixDriveUrl(url) {
+            if (!url || typeof url !== 'string') return "";
+            if (url.includes("drive.google.com")) {
+                let fileId = "";
+                if (url.includes("id=")) {
+                    fileId = url.split("id=")[1].split("&")[0];
+                } else if (url.includes("/d/")) {
+                    let parts = url.split("/");
+                    fileId = parts[parts.indexOf("d") + 1];
+                }
+                // Memaksa Google mengeluarkan gambar langsung tanpa blokir
+                return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
             }
             return url;
         }
 
         async function loadData() {
-            if(!idRapat) {
-                tampilkanError("ID Rapat tidak ditemukan di URL.");
-                return;
-            }
+            if(!idRapat) return;
+
             try {
                 const res = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ formType: 'getDetailRapat', idRapat: idRapat }) });
                 const resData = await res.json();
                 
-                if(resData.status === 'success' && resData.data) {
-                    const r = resData.data;
-                    document.getElementById('print-acara').innerText = r.nama;
-                    document.getElementById('print-hari').innerText = new Date(r.tgl).toLocaleDateString('id-ID', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
-                    document.getElementById('print-tempat').innerText = r.lokasi;
-                    
-                    let jam = r.waktu || "-";
-                    if(jam.includes('T')) jam = jam.split('T')[1].substring(0,5);
-                    document.getElementById('print-waktu').innerText = jam + " WITA";
-
-                    if(r.notulen) {
-                        const raw = r.notulen;
-                        const pNama = raw.split('[PIMPINAN RAPAT]')[1]?.split('[NOTULIS]')[0].trim() || "-";
-                        const nNama = raw.split('[NOTULIS]')[1]?.split('[PEMBAHASAN]')[0].trim() || "-";
-                        const pemb = raw.split('[PEMBAHASAN]')[1]?.split('[KESIMPULAN & HASIL]')[0].trim() || "-";
-                        let kesimp = raw.split('[KESIMPULAN & HASIL]')[1] || "-";
-
-                        if(kesimp.includes('[DOKUMENTASI]')) {
-                            const urls = kesimp.split('[DOKUMENTASI]')[1].trim().split(',').filter(x => x.trim() !== "");
-                            kesimp = kesimp.split('[DOKUMENTASI]')[0].trim();
-                            if(urls.length > 0) {
-                                urls.forEach(url => {
-                                    const img = document.createElement('img');
-                                    img.src = formatDriveUrl(url.trim());
-                                    img.className = "w-full h-64 object-cover rounded-2xl border border-slate-200 shadow-sm";
-                                    document.getElementById('dok-container').appendChild(img);
-                                });
-                            } else { document.getElementById('area-dokumentasi').classList.add('hidden'); }
-                        } else { document.getElementById('area-dokumentasi').classList.add('hidden'); }
-
-                        document.getElementById('print-pimpinan').innerText = pNama;
-                        document.getElementById('print-notulis').innerText = nNama;
-                        document.getElementById('print-pembahasan').innerText = pemb;
-                        document.getElementById('print-kesimpulan').innerText = kesimp;
-                        document.getElementById('ttd-pimpinan').innerText = pNama;
-                        document.getElementById('ttd-notulis').innerText = nNama;
-
-                        fetchPeserta(idRapat, r.jenis, pNama, nNama);
-                    }
-                } else {
-                    tampilkanError("Dokumen laporan untuk rapat ini tidak ditemukan.");
-                }
-            } catch(e) { tampilkanError("Gagal mengambil data dari server."); }
-        }
-
-        async function fetchPeserta(id, jenis, pNama, nNama) {
-            try {
-                const res = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ formType: 'getPantauPeserta', idRapat: id, jenisRapat: jenis }) });
-                const resData = await res.json();
-                
                 if(resData.status === 'success') {
-                    const tbody = document.getElementById('tabel-peserta-body');
-                    tbody.innerHTML = "";
-                    resData.data.forEach((p, idx) => {
-                        const ttdUrl = formatDriveUrl(p.ttd);
-                        const isEven = (idx + 1) % 2 === 0;
-                        const alignClass = isEven ? 'ml-auto' : 'mr-auto';
-                        const numPos = isEven ? 'right-2' : 'left-2';
+                    const r = resData.data;
+                    document.getElementById('view-nama-rapat').innerText = r.nama;
+                    document.getElementById('lamp-nama-rapat').innerText = r.nama;
+                    
+                    let tglTampil = r.tgl;
+                    if(r.tgl && r.tgl.includes("-")) {
+                        const pts = r.tgl.split("-");
+                        if(pts.length === 3) tglTampil = new Date(pts[0], pts[1]-1, pts[2]).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+                    }
+                    document.getElementById('view-tgl').innerText = tglTampil;
+                    document.getElementById('view-tgl-ttd').innerText = tglTampil;
+                    document.getElementById('view-waktu').innerText = (r.waktu ? r.waktu.substring(0,5) : "-") + " WITA s.d Selesai";
+                    document.getElementById('view-lokasi').innerText = r.lokasi;
 
-                        // --- LOGIKA CERDAS DETEKSI HP ATAU NIP ---
-                        // Kita tidak lagi mengecek nama instansi, melainkan mengecek input kontaknya langsung
-                        let labelKontak = "NIP.";
-                        const numStr = p.nip.toString().replace(/'/g, ""); // Hilangkan kutip jika ada
+                    document.getElementById('view-pimpinan').innerText = r.pimpinan || "-";
+                    document.getElementById('view-sekretaris').innerText = r.sekretaris || "-";
+                    document.getElementById('sign-pimpinan').innerText = r.pimpinan || "-";
+                    
+                    document.getElementById('view-pembukaan').innerText = r.pembukaan || "-";
+                    document.getElementById('view-keputusan').innerText = r.keputusan || "-";
+                    document.getElementById('view-penutup').innerText = r.penutup || "-";
+
+                    // PROSES TEKS DAN GAMBAR
+                    let pembahasanFull = String(r.pembahasan || "");
+                    if (pembahasanFull.includes("[DOKUMENTASI]")) {
+                        let parts = pembahasanFull.split(/\[DOKUMENTASI\]/i);
+                        document.getElementById('view-pembahasan').innerText = parts[0].trim();
                         
-                        // Jika angkanya diawali 0 atau +62, dipastikan itu nomor HP
-                        if (numStr.startsWith('0') || numStr.startsWith('+62')) {
-                            labelKontak = "No. HP:";
+                        let photoUrls = parts[1].split(",").map(u => u.trim()).filter(u => u !== "");
+                        if (photoUrls.length > 0) {
+                            document.getElementById('area-dokumentasi').classList.remove('hidden');
+                            const grid = document.getElementById('grid-foto');
+                            grid.innerHTML = "";
+                            photoUrls.forEach(url => {
+                                grid.innerHTML += `<div class="border border-slate-300 p-2"><img src="${fixDriveUrl(url)}" class="w-full h-auto object-cover"></div>`;
+                            });
                         }
+                    } else {
+                        document.getElementById('view-pembahasan').innerText = pembahasanFull;
+                    }
 
-                        tbody.innerHTML += `<tr class="hover:bg-slate-50 transition-colors">
-                            <td class="px-4 py-4 text-center font-bold text-slate-800 border-r border-slate-200">${idx + 1}</td>
-                            <td class="px-4 py-4 border-r border-slate-200">
-                                <div class="font-bold text-slate-800 uppercase">${p.nama}</div>
-                                <div class="text-[11px] font-semibold text-slate-400 mt-0.5 tracking-wider">${p.nip !== '-' ? labelKontak + ' ' + numStr : ''}</div>
-                            </td>
-                            <td class="px-4 py-4 border-r border-slate-200">
-                                <div class="font-semibold text-slate-700">${p.instansi}</div>
-                                <div class="text-xs text-slate-500 mt-0.5">${p.jabatan}</div>
-                            </td>
-                            <td class="px-4 py-2 relative h-20 w-40">
-                                <span class="text-[10px] font-bold text-slate-300 absolute top-2 ${numPos}">${idx + 1}.</span>
-                                ${p.ttd ? `<img src="${ttdUrl}" class="h-14 w-auto max-w-[100px] object-contain ${alignClass}">` : ''}
-                            </td>
-                        </tr>`;
-
-                        if(p.nama.toLowerCase().includes(pNama.toLowerCase())) document.getElementById('nip-pimpinan').innerText = "NIP. " + numStr;
-                        if(p.nama.toLowerCase().includes(nNama.toLowerCase())) document.getElementById('nip-notulis').innerText = "NIP. " + numStr;
-                    });
-
-                    document.getElementById('loading-area').classList.add('hidden');
-                    document.getElementById('content-area').classList.remove('hidden');
+                    // PROSES TANDA TANGAN PESERTA
+                    const resHadir = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ formType: 'getPantauPeserta', idRapat: idRapat, jenisRapat: r.jenis }) });
+                    const hadirData = await resHadir.json();
+                    if(hadirData.status === 'success') {
+                        document.getElementById('view-total-peserta').innerText = hadirData.total;
+                        const tbody = document.getElementById('tabel-hadir-body');
+                        tbody.innerHTML = "";
+                        hadirData.data.forEach((p, i) => {
+                            tbody.innerHTML += `<tr>
+                                <td style="text-align:center;">${i+1}</td>
+                                <td><b>${p.nama}</b><br><small>NIP. ${p.nip}</small></td>
+                                <td>${p.instansi}<br><small>${p.jabatan}</small></td>
+                                <td style="text-align:center;"><img src="${fixDriveUrl(p.ttd)}" style="max-height:60px; margin:auto; display:block;"></td>
+                            </tr>`;
+                        });
+                    }
                 }
-            } catch(e) { console.log(e); }
+            } catch(e) { console.error(e); }
         }
-
-        function tampilkanError(pesan) {
-            document.getElementById('loading-area').classList.add('hidden');
-            document.getElementById('error-area').classList.remove('hidden');
-            document.getElementById('error-msg').innerText = pesan;
-        }
-
-        window.addEventListener('DOMContentLoaded', loadData);
+        window.onload = loadData;
     </script>
 </body>
 </html>
